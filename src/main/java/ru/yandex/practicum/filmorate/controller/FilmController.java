@@ -3,12 +3,13 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.FilmAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validator.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -18,10 +19,10 @@ public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
 
     @PostMapping
-    public Film add(@RequestBody Film film) throws FilmAlreadyExistException, ValidateException {
+    public Film add(@RequestBody Film film) throws ValidateException {
         if (film == null) {
-            System.out.println("Получен null");
-            return null;
+            log.debug("Получен null");
+            throw new ValidateException("Получен null");
         }
         try {
             runValidation(film);
@@ -38,8 +39,8 @@ public class FilmController {
     @PutMapping
     public Film update(@RequestBody Film film) throws ValidateException {
         if (film == null) {
-            System.out.println("Получен null");
-            return null;
+            log.debug("Получен null");
+            throw new ValidateException("Получен null");
         }
         try {
             runValidation(film);
@@ -49,7 +50,7 @@ public class FilmController {
         }
         if (!films.containsKey(film.getId())) {
             log.debug("Такого id нет: {}", film.getId());
-            throw new ValidateException("Такого шв нет:" + film.getId());
+            throw new ValidateException("Такого id нет:" + film.getId());
         }
 
         films.put(film.getId(), film);
