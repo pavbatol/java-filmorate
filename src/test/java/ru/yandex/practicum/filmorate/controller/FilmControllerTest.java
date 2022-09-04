@@ -88,4 +88,12 @@ class FilmControllerTest {
                 () -> ctrl.add(film2), "Name validation passed");
     }
 
+    @Test
+    void should_creating_not_passed_when_name_is_null() {
+        assertThrows(NullPointerException.class,
+                () -> new Film(null, LocalDate.of(1895, 12, 28), 1000),
+                "Name creating passed");
+    }
+
+
 }
