@@ -2,15 +2,18 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validator.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Validated
 @Slf4j
 @RestController
 @RequestMapping("/users")
@@ -19,7 +22,7 @@ public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
 
     @PostMapping
-    public User add(@RequestBody User user) throws ValidateException {
+    public User add(@Valid  @RequestBody User user) throws ValidateException {
         if (user == null) {
             log.debug("Получен null");
             throw new ValidateException("Получен null");
@@ -37,7 +40,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody User user) throws ValidateException {
+    public User update(@Valid @RequestBody User user) throws ValidateException {
         if (user == null) {
             log.debug("Получен null");
             throw new ValidateException("Получен null");
