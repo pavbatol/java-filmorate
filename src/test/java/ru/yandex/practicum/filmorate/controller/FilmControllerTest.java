@@ -39,7 +39,6 @@ class FilmControllerTest {
 
     @Test
     void should_creating_not_passed_when_date_is_null() {
-        Film film2;
 
         assertThrows(NullPointerException.class,
                 () -> new Film("fimName", null, 120), "Exception not thrown");
@@ -81,7 +80,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void should_validation_not_passed_when_name_is_blank() throws ValidateException {
+    void should_validation_not_passed_when_name_is_blank() {
         Film film2;
         film2 = new Film("   ", LocalDate.of(1895, 12, 28), 0);
 
