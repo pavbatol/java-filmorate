@@ -27,12 +27,12 @@ public class FilmController {
             log.debug("Получен null");
             throw new ValidateException("Получен null");
         }
-//        try {
-//            runValidation(film);
-//        } catch (ValidateException e) {
-//            log.debug("Валидация полей для Film не пройдена: " + e.getMessage());
-//            throw e;
-//        }
+        try {
+            runValidation(film);
+        } catch (ValidateException e) {
+            log.debug("Валидация полей для Film не пройдена: " + e.getMessage());
+            throw e;
+        }
         film.setId(generateId());
         films.put(film.getId(), film);
         log.debug("Добавлен фильм {}", film);
