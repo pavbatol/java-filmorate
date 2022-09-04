@@ -50,7 +50,7 @@ class UserControllerTest {
 
         assertThrows(ValidateEmailException.class,
                 () -> ctrl.add(user2),
-                "Date validating is passed");
+                "Email validating is passed");
     }
 
     @Test
@@ -60,7 +60,7 @@ class UserControllerTest {
 
         assertThrows(ValidateEmailException.class,
                 () -> ctrl.add(user2),
-                "Date validating is passed");
+                "Email validating is passed");
     }
 
     @Test
@@ -70,7 +70,7 @@ class UserControllerTest {
 
         assertThrows(ValidateEmailException.class,
                 () -> ctrl.add(user2),
-                "Date validating is passed");
+                "Email validating is passed");
     }
 
     @Test
@@ -80,7 +80,7 @@ class UserControllerTest {
 
         assertThrows(ValidateEmailException.class,
                 () -> ctrl.add(user2),
-                "Date validating is passed");
+                "Email validating is passed");
     }
 
     @Test
@@ -90,7 +90,7 @@ class UserControllerTest {
 
         assertThrows(ValidateLoginException.class,
                 () -> ctrl.add(user2),
-                "Date validating is passed");
+                "Login validating is passed");
     }
 
     @Test
@@ -100,7 +100,7 @@ class UserControllerTest {
 
         assertThrows(ValidateLoginException.class,
                 () -> ctrl.add(user2),
-                "Date validating is passed");
+                "Login validating is passed");
     }
 
     @Test
@@ -175,7 +175,7 @@ class UserControllerTest {
     void should_creating_not_passed_when_date_is_null() {
 
         assertThrows(NullPointerException.class,
-                () -> new User("test@test.ru", "testLogin", null));
+                () -> new User("test@test.ru", "testLogin", null), "User created");
 
     }
 

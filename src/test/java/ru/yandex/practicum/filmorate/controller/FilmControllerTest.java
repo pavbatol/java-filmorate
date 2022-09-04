@@ -67,7 +67,7 @@ class FilmControllerTest {
                 + film.getDescription().length());
 
         assertThrows(ValidateDescriptionException.class,
-                () -> ctrl.add(film), "Date validation passed");
+                () -> ctrl.add(film), "Description validation passed");
     }
 
     @Test
@@ -82,10 +82,10 @@ class FilmControllerTest {
     @Test
     void should_validation_not_passed_when_name_is_blank() {
         Film film2;
-        film2 = new Film("   ", LocalDate.of(1895, 12, 28), 0);
+        film2 = new Film("   ", LocalDate.of(1895, 12, 28), 100);
 
         assertThrows(ValidateNameException.class,
-                () -> ctrl.add(film2), "Date validation passed");
+                () -> ctrl.add(film2), "Name validation passed");
     }
 
 }
