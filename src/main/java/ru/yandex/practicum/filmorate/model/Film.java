@@ -2,7 +2,8 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import lombok.NonNull;
-import ru.yandex.practicum.filmorate.validator.annotationed.PastCinemaBirthday;
+import org.hibernate.validator.constraints.Length;
+import ru.yandex.practicum.filmorate.validator.annotationed.FromCinemaDayToCurrent;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -16,11 +17,11 @@ public class Film {
     @NotBlank
     private final String name;
 
-    @Pattern(regexp = "^.{0,200}$", message = "Допустимо не более 200 символов")
+    @Length(max = 200)
     private String description;
 
     @NonNull
-    @PastCinemaBirthday(message = "Дата релиза — не раньше 28 декабря 1895 года")
+    @FromCinemaDayToCurrent()
     private final LocalDate releaseDate;
 
     @Positive

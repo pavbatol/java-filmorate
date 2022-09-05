@@ -31,9 +31,13 @@ class FilmControllerTest {
     @Test
     void should_validation_not_passed_when_date_wrong() {
         final Film film2 = new Film("fimName", LocalDate.of(1895, 12, 27), 120);
+        final Film film3 = new Film("fimName", LocalDate.now().plusDays(1), 100);
 
         assertThrows(ValidateDateException.class,
-                () -> ctrl.add(film2), "Date validation passed");
+                () -> ctrl.add(film2), "Before-Date validation passed");
+
+        assertThrows(ValidateDateException.class,
+                () -> ctrl.add(film3), "Future-Date validation passed");
 
     }
 

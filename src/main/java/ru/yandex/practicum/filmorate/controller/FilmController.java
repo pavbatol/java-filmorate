@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -13,26 +12,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Validated
 @Slf4j
 @RestController
 @RequestMapping("/films")
-@Validated
 public class FilmController {
     int lastId;
     private final Map<Integer, Film> films = new HashMap<>();
 
     @PostMapping
     public Film add(@Valid @RequestBody Film film) throws ValidateException {
-        if (film == null) {
-            log.debug("Получен null");
-            throw new ValidateException("Получен null");
-        }
-        try {
-            runValidation(film);
-        } catch (ValidateException e) {
-            log.debug("Валидация полей для Film не пройдена: " + e.getMessage());
-            throw e;
-        }
+        runValidation(film);
         film.setId(generateId());
         films.put(film.getId(), film);
         log.debug("Добавлен фильм {}", film);
@@ -41,21 +31,11 @@ public class FilmController {
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) throws ValidateException {
-        if (film == null) {
-            log.debug("Получен null");
-            throw new ValidateException("Получен null");
-        }
-        try {
-            runValidation(film);
-        } catch (ValidateException e) {
-            log.debug("Валидация полей для Film не пройдена: " + e.getMessage());
-            throw e;
-        }
+        runValidation(film);
         if (!films.containsKey(film.getId())) {
             log.debug("Такого id нет: {}", film.getId());
             throw new ValidateException("Такого id нет:" + film.getId());
         }
-
         films.put(film.getId(), film);
         log.debug("Обновлен фильм {}", film);
         return film;
@@ -73,6 +53,7 @@ public class FilmController {
 
     private List<FilmValidator> getValidators() {
         return List.of(
+                new NullPointerValidator(),
                 new FilmNameValidator(),
                 new FilmDescriptionValidator(),
                 new FilmDateValidator(),
@@ -80,9 +61,14 @@ public class FilmController {
         );
     }
 
-    private void runValidation(@NonNull Film film) throws ValidateException {
+    private void runValidation(Film film) throws ValidateException {
         for (FilmValidator validator : getValidators()) {
-            validator.validate(film);
+            try {
+                validator.validate(film);
+            } catch (ValidateException e) {
+                log.debug("Валидация полей для Film не пройдена: " + e.getMessage());
+                throw e;
+            }
         }
     }
 }

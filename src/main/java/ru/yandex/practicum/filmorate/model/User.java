@@ -8,14 +8,12 @@ import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
     private int id;
 
     @NonNull
     @Email
-    @EqualsAndHashCode.Include
     private final String email;
 
     @NonNull

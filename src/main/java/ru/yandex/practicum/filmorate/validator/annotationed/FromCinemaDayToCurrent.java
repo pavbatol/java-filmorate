@@ -11,11 +11,11 @@ import javax.validation.Payload;
 
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PastCinemaBirthdayValidator.class)
+@Constraint(validatedBy = FromCinemaDayToCurrentValidator.class)
 @Documented
-public @interface PastCinemaBirthday {
+public @interface FromCinemaDayToCurrent {
 
-    String message() default "it.example.validator.MyPast.message";
+    String message() default "Дата релиза — не раньше 28 декабря 1895 года и не в будущем";
 
     Class<?>[] groups() default {};
 

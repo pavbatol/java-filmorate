@@ -10,8 +10,9 @@ import java.time.LocalDate;
 public class FilmDateValidator implements FilmValidator{
     @Override
     public void validate(@NonNull Film film) throws ValidateException {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidateDateException("Дата релиза — не раньше 28 декабря 1895 года");
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))
+                || film.getReleaseDate().isAfter(LocalDate.now())) {
+            throw new ValidateDateException("Дата релиза — не раньше 28 декабря 1895 года и не в будущем");
         }
     }
 }

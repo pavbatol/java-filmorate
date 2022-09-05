@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,16 +22,7 @@ public class UserController {
 
     @PostMapping
     public User add(@Valid  @RequestBody User user) throws ValidateException {
-        if (user == null) {
-            log.debug("Получен null");
-            throw new ValidateException("Получен null");
-        }
-        try {
-            runValidation(user);
-        } catch (ValidateException e) {
-            log.debug("Валидация полей для User не пройдена: " + e.getMessage());
-            throw e;
-        }
+        runValidation(user);
         user.setId(generateId());
         users.put(user.getId(), user);
         log.debug("Добавлен пользователь {}", user);
@@ -41,21 +31,11 @@ public class UserController {
 
     @PutMapping
     public User update(@Valid @RequestBody User user) throws ValidateException {
-        if (user == null) {
-            log.debug("Получен null");
-            throw new ValidateException("Получен null");
-        }
-        try {
-            runValidation(user);
-        } catch (ValidateException e) {
-            log.debug("Валидация полей для User не пройдена: " + e.getMessage());
-            throw e;
-        }
+        runValidation(user);
         if (!users.containsKey(user.getId())) {
             log.debug("Такого id нет: {}", user.getId());
             throw new ValidateException("Такого id нет:" + user.getId());
         }
-
         users.put(user.getId(), user);
         log.debug("Обновлен пользователь {}", user);
         return user;
@@ -73,6 +53,7 @@ public class UserController {
 
     private List<UserValidator> getValidators() {
         return List.of(
+                new NullPointerValidator(),
                 new UserLoginValidator(),
                 new UserNameValidator(),
                 new UserEmailValidator(),
@@ -80,9 +61,14 @@ public class UserController {
         );
     }
 
-    private void runValidation(@NonNull User user) throws ValidateException {
+    private void runValidation(User user) throws ValidateException {
         for (UserValidator validator : getValidators()) {
-            validator.validate(user);
+            try {
+                validator.validate(user);
+            } catch (ValidateException e) {
+                log.debug("Валидация полей для User не пройдена: " + e.getMessage());
+                throw e;
+            }
         }
     }
 }

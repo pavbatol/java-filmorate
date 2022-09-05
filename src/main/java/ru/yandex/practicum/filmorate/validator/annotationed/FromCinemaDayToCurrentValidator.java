@@ -5,7 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 import java.time.temporal.Temporal;
 
-public class PastCinemaBirthdayValidator implements ConstraintValidator<PastCinemaBirthday, Temporal> {
+public class FromCinemaDayToCurrentValidator implements ConstraintValidator<FromCinemaDayToCurrent, Temporal> {
 
     @Override
     public boolean isValid(Temporal temporal, ConstraintValidatorContext constraintValidatorContext) {
@@ -13,6 +13,7 @@ public class PastCinemaBirthdayValidator implements ConstraintValidator<PastCine
             return false;
         }
         LocalDate ld = LocalDate.from(temporal);
-        return !ld.isBefore(LocalDate.of(1895, 12, 28));
+        return !ld.isBefore(LocalDate.of(1895, 12, 28))
+                && !ld.isAfter(LocalDate.now());
     }
 }
