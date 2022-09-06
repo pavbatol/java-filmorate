@@ -60,5 +60,7 @@ public class FilmController {
         }
     }
 
-
+    protected void clear() {
+        films.clear();
+    }
 }
