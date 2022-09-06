@@ -2,22 +2,24 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import lombok.NonNull;
-import org.hibernate.validator.constraints.Length;
 import ru.yandex.practicum.filmorate.validator.annotationed.FromCinemaDayToCurrent;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Data
 public class Film {
 
-    private int id;
+    private long id;
 
     @NonNull
     @NotBlank
     private final String name;
 
-    @Length(max = 200)
+    @NonNull
+    @Size(max = 200)
     private String description;
 
     @NonNull

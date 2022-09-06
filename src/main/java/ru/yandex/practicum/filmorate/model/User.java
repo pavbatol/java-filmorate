@@ -10,14 +10,14 @@ import java.time.LocalDate;
 @Data
 public class User {
 
-    private int id;
+    private long id;
 
     @NonNull
     @Email
     private final String email;
 
     @NonNull
-    @Pattern(regexp = "\\S+", message = "Логин не может быть пустым и содержать пробелы")
+    @Pattern(regexp = "\\S+")
     private final String login;
 
     private String name;

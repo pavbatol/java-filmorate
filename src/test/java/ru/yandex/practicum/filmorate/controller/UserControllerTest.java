@@ -86,7 +86,7 @@ class UserControllerTest {
     @Test
     void should_validation_not_passed_when_login_is_blank() {
         final User user2;
-        user2 = new User("test@тест.ru", "   ", LocalDate.now());
+        user2 = new User("test@test.ru", "   ", LocalDate.now());
 
         assertThrows(ValidateLoginException.class,
                 () -> ctrl.add(user2),
@@ -96,7 +96,7 @@ class UserControllerTest {
     @Test
     void should_validation_not_passed_when_login_have_whitespace() {
         final User user2;
-        user2 = new User("test@тест.ru", "My Login", LocalDate.now());
+        user2 = new User("test@test.ru", "My Login", LocalDate.now());
 
         assertThrows(ValidateLoginException.class,
                 () -> ctrl.add(user2),

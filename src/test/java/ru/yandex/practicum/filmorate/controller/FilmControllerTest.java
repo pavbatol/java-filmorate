@@ -16,7 +16,7 @@ class FilmControllerTest {
     @BeforeEach
     void setUp() {
         ctrl = new FilmController();
-        film = new Film("fimName", LocalDate.now(), 120);
+        film = new Film("fimName", "filmDescription", LocalDate.now(), 120);
     }
 
     @Test
@@ -30,8 +30,8 @@ class FilmControllerTest {
 
     @Test
     void should_validation_not_passed_when_date_wrong() {
-        final Film film2 = new Film("fimName", LocalDate.of(1895, 12, 27), 120);
-        final Film film3 = new Film("fimName", LocalDate.now().plusDays(1), 100);
+        final Film film2 = new Film("fimName", "filmDescription", LocalDate.of(1895, 12, 27), 120);
+        final Film film3 = new Film("fimName", "filmDescription", LocalDate.now().plusDays(1), 100);
 
         assertThrows(ValidateDateException.class,
                 () -> ctrl.add(film2), "Before-Date validation passed");
@@ -45,7 +45,7 @@ class FilmControllerTest {
     void should_creating_not_passed_when_date_is_null() {
 
         assertThrows(NullPointerException.class,
-                () -> new Film("fimName", null, 120), "Exception not thrown");
+                () -> new Film("fimName", "filmDescription", null, 120), "Exception not thrown");
 
     }
 
@@ -54,7 +54,7 @@ class FilmControllerTest {
         Film film2;
 
         try {
-            film2 = new Film("fimName", LocalDate.of(1895, 12, 27), 120);
+            film2 = new Film("fimName", "filmDescription", LocalDate.of(1895, 12, 27), 120);
             assertNotNull(film2);
         } catch (NullPointerException e) {
             fail("Exception thrown");
@@ -77,7 +77,7 @@ class FilmControllerTest {
     @Test
     void should_validation_not_passed_when_duration_wrong() {
         Film film2;
-        film2 = new Film("fimName", LocalDate.of(1895, 12, 28), 0);
+        film2 = new Film("fimName", "filmDescription", LocalDate.of(1895, 12, 28), 0);
 
         assertThrows(ValidateDurationException.class,
                 () -> ctrl.add(film2), "Date validation passed");
@@ -86,7 +86,7 @@ class FilmControllerTest {
     @Test
     void should_validation_not_passed_when_name_is_blank() {
         Film film2;
-        film2 = new Film("   ", LocalDate.of(1895, 12, 28), 100);
+        film2 = new Film("   ", "filmDescription", LocalDate.of(1895, 12, 28), 100);
 
         assertThrows(ValidateNameException.class,
                 () -> ctrl.add(film2), "Name validation passed");
@@ -95,7 +95,7 @@ class FilmControllerTest {
     @Test
     void should_creating_not_passed_when_name_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new Film(null, LocalDate.of(1895, 12, 28), 1000),
+                () -> new Film(null, "filmDescription", LocalDate.of(1895, 12, 28), 1000),
                 "Name creating passed");
     }
 
