@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.time.LocalDate;
 
 import static java.time.Month.DECEMBER;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -49,12 +48,7 @@ class FilmControllerTest_2 {
         mvc.perform(post("/films").
                         content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(film)))
-                .andExpect(content().json(objectMapper.writeValueAsString(film)))
-        ;
-
-        assertEquals(1, film.getId());
-        assertEquals(1, controller.findAll().size());
+                .andExpect(content().json(objectMapper.writeValueAsString(film)));
     }
 
     @Test

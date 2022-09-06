@@ -23,6 +23,7 @@ public class UserController {
     @PostMapping
     public User add(@Valid  @RequestBody User user) {
         runValidation(user);
+        editName(user);
         user.setId(generateId());
         users.put(user.getId(), user);
         log.info("Добавлен пользователь {}", user);
@@ -32,6 +33,7 @@ public class UserController {
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         runValidation(user);
+        editName(user);
         if (!users.containsKey(user.getId())) {
             log.warn("Такого id нет: {}", user.getId());
             throw new ValidateException("Такого id нет:" + user.getId());
@@ -58,8 +60,15 @@ public class UserController {
             log.warn("Валидация полей для User не пройдена: " + e.getMessage());
             throw e;
         }
+    }
+
+    private void editName(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
+    }
+
+    protected void clear() {
+        users.clear();
     }
 }
