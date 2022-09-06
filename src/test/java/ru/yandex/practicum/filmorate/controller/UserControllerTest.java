@@ -1,182 +1,164 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.ValidateDateException;
-import ru.yandex.practicum.filmorate.exception.ValidateEmailException;
-import ru.yandex.practicum.filmorate.exception.ValidateException;
-import ru.yandex.practicum.filmorate.exception.ValidateLoginException;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WebMvcTest
 class UserControllerTest {
-    private UserController ctrl;
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @SpyBean
+    UserController controller;
     private User user;
+    private static final String GOOD_EMAIL = "test@test.ru";
+    private static final String GOOD_LOGIN = "testLogin";
+    private static final String GOOD_NAME = "testName";
+    private static final LocalDate GOOD_DATE = LocalDate.now().minusDays(1);
+    private static final LocalDate CURRENT_DAY =  LocalDate.now();
 
     @BeforeEach
     void setUp() {
-        ctrl = new UserController();
-        user = new User("test@test.ru", "testLogin", LocalDate.of(1980, 7, 11));
+        controller.clear();
+        user = getGoodNewUser();
     }
 
     @Test
-    void should_validation_passed_when_all_field_good() throws ValidateException {
-        assertEquals(0, ctrl.findAll().size(), "Size is not equal");
+    public void whenAdd_should_status_200_and_film_returned_if_all_fields_good() throws Exception {
+        Mockito.when(controller.add(user)).thenReturn(user);
 
-        assertNotNull(ctrl.add(user));
-
-        assertEquals(1, ctrl.findAll().size(), "Size is not equal");
+        mvc.perform(post("/users").
+                        content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(user)));
     }
 
     @Test
-    void should_validation_passed_when_email_good() throws ValidateException {
-        final User user2;
-        user2 = new User("test@test.ru", "testLogin", LocalDate.now());
-
-        assertEquals(0, ctrl.findAll().size(), "Size is not equal");
-
-        assertNotNull(ctrl.add(user2));
-
-        assertEquals(1, ctrl.findAll().size(), "Size is not equal");
-    }
-
-    @Test
-    void should_validation_not_passed_when_email_not_have_dog() {
-        final User user2;
-        user2 = new User("testtest.ru", "testLogin", LocalDate.now());
-
-        assertThrows(ValidateEmailException.class,
-                () -> ctrl.add(user2),
-                "Email validating is passed");
-    }
-
-    @Test
-    void should_validation_not_passed_when_email_not_have_dot() {
-        final User user2;
-        user2 = new User("test@testru", "testLogin", LocalDate.now());
-
-        assertThrows(ValidateEmailException.class,
-                () -> ctrl.add(user2),
-                "Email validating is passed");
-    }
-
-    @Test
-    void should_validation_not_passed_when_email_have_cyrillic_before_dog() {
-        final User user2;
-        user2 = new User("тест@test.ru", "testLogin", LocalDate.now());
-
-        assertThrows(ValidateEmailException.class,
-                () -> ctrl.add(user2),
-                "Email validating is passed");
-    }
-
-    @Test
-    void should_validation_not_passed_when_email_have_cyrillic_before_dot() {
-        final User user2;
-        user2 = new User("test@тест.ru", "testLogin", LocalDate.now());
-
-        assertThrows(ValidateEmailException.class,
-                () -> ctrl.add(user2),
-                "Email validating is passed");
-    }
-
-    @Test
-    void should_validation_not_passed_when_login_is_blank() {
-        final User user2;
-        user2 = new User("test@test.ru", "   ", LocalDate.now());
-
-        assertThrows(ValidateLoginException.class,
-                () -> ctrl.add(user2),
-                "Login validating is passed");
-    }
-
-    @Test
-    void should_validation_not_passed_when_login_have_whitespace() {
-        final User user2;
-        user2 = new User("test@test.ru", "My Login", LocalDate.now());
-
-        assertThrows(ValidateLoginException.class,
-                () -> ctrl.add(user2),
-                "Login validating is passed");
-    }
-
-    @Test
-    void should_validation_passed_when_name_is_null() throws ValidateException {
-        final User user2;
-        user2 = new User("test@test.ru", "MyLogin", LocalDate.now());
-
-        assertNull(user2.getName());
-
-        assertEquals(0, ctrl.findAll().size(), "Size is not equal");
-
-        assertNotNull(ctrl.add(user2));
-
-        assertEquals(1, ctrl.findAll().size(), "Size is not equal");
-    }
-
-    @Test
-    void should_validation_passed_when_name_is_blank() throws ValidateException {
-        final User user2;
-        user2 = new User("test@test.ru", "MyLogin", LocalDate.now());
-        user2.setName("  ");
-
-        assertEquals(0, ctrl.findAll().size(), "Size is not equal");
-
-        assertNotNull(ctrl.add(user2));
-
-        assertEquals(1, ctrl.findAll().size(), "Size is not equal");
-    }
-
-    @Test
-    void should_name_equals_login_when_name_is_blank_or_null() throws ValidateException {
-        final User user2;
-        user2 = new User("test@test.ru", "MyLogin", LocalDate.now());
-
-        user2.setName("  ");
-        User addedUser = ctrl.add(user2);
-
-        assertNotNull(addedUser);
-        assertEquals(addedUser.getLogin(), addedUser.getName(), "Name not equals Login");
-
-        user2.setName(null);
-        addedUser = ctrl.add(user2);
-
-        assertNotNull(addedUser);
-        assertEquals(addedUser.getLogin(), addedUser.getName(), "Name not equals Login");
-    }
-
-    @Test
-    void should_validation_not_passed_when_date_wrong() {
-        final User user2;
-        user2 = new User("test@test.ru", "testLogin", LocalDate.now().plusDays(1));
-
-        assertThrows(ValidateDateException.class,
-                () -> ctrl.add(user2), "Date validation passed");
-
-    }
-
-    @Test
-    void should_validation_not_passed_when_date_good() {
-        final User user2;
-        user2 = new User("test@test.ru", "testLogin", LocalDate.now());
-
-        try {
-            assertNotNull(ctrl.add(user2), "Return is null");
-            assertEquals(1, ctrl.findAll().size(), "Size is not equal");
-        } catch (ValidateException e) {
-            fail("Date validation is not passed");
-        }
-    }
-
-    @Test
-    void should_creating_not_passed_when_date_is_null() {
-
+    public void whenAdd_should_status_400_if_email_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new User("test@test.ru", "testLogin", null), "User created");
-
+                () -> new User(null, GOOD_LOGIN, GOOD_DATE),
+                "Exception not thrown");
     }
 
+    @Test
+    public void whenAdd_should_status_400_if_email_is_blank() throws Exception {
+        user = new User("  ", GOOD_LOGIN, GOOD_DATE);
+
+        mvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void whenAdd_should_status_400_if_email_not_have_dog() throws Exception {
+        user = new User("test_test.ru", GOOD_LOGIN, GOOD_DATE);
+
+        mvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void whenAdd_should_status_400_if_email_is_wrong() throws Exception {
+        user = new User("@testtest.ru", GOOD_LOGIN, GOOD_DATE);
+
+        mvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void whenAdd_should_status_400_if_login_is_blank() throws Exception {
+        user = new User(GOOD_EMAIL, "   ", GOOD_DATE);
+
+        mvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void whenAdd_should_status_400_if_login_have_whitespace() throws Exception {
+        user = new User(GOOD_EMAIL, "my login", GOOD_DATE);
+
+        mvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void whenAdd_should_status_200_if_name_is_blank() throws Exception {
+        user.setName("  ");
+        Mockito.when(controller.add(user)).thenReturn(user);
+
+        mvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        assertEquals(user.getLogin(), user.getName());
+    }
+
+    @Test
+    public void whenAdd_should_status_200_if_name_is_null() throws Exception {
+        user.setName(null);
+        Mockito.when(controller.add(user)).thenReturn(user);
+
+        mvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        assertEquals(user.getLogin(), user.getName());
+    }
+
+    @Test
+    void whenAdd_should_status_400_if_date_is_null() {
+        assertThrows(NullPointerException.class,
+                () -> new User(GOOD_EMAIL, GOOD_LOGIN, null),
+                "Exception not thrown");
+    }
+
+    @Test
+    void whenAdd_should_status_400_if_date_is_not_past() throws Exception {
+        user = new User(GOOD_EMAIL, GOOD_LOGIN, CURRENT_DAY);
+
+        mvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    private User getGoodNewUser() {
+        return new User(GOOD_EMAIL, GOOD_LOGIN, GOOD_DATE);
+    }
+
+    private User getNewUser(String name) {
+        User user = new User(GOOD_EMAIL, GOOD_LOGIN, GOOD_DATE);
+        user.setName(name);
+        return user;
+    }
+
+    private String getGoodNewUserAsJson() {
+        return '{'
+                + "\"id\":0,"
+                + "\"email\":\"" +GOOD_EMAIL + "\","
+                + "\"login\":\"" +GOOD_LOGIN + "\","
+                + "\"name\":\"" +GOOD_NAME + "\","
+                + "\"birthday\":\"" +GOOD_DATE + "\""
+                + '}';
+    }
 }

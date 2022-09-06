@@ -1,103 +1,116 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.*;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static java.time.Month.DECEMBER;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WebMvcTest
 class FilmControllerTest {
-    private FilmController ctrl;
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @SpyBean
+    FilmController controller;
     private Film film;
+    private static final String GOOD_NAME = "Test";
+    private static final String GOOD_DESCRIPTION = "TestTest TestTest";
+    private static final LocalDate GOOD_DATE = LocalDate.now().minusDays(1);
+    private static final long GOOD_DURATION = 1;
+    private static final LocalDate CINEMA_DAY =  LocalDate.of(1895, DECEMBER, 28);
+    private static final LocalDate CURRENT_DAY =  LocalDate.now();
 
     @BeforeEach
     void setUp() {
-        ctrl = new FilmController();
-        film = new Film("fimName", "filmDescription", LocalDate.now(), 120);
+        controller.clear();
+        film = getGoodNewFilm();
     }
 
     @Test
-    void should_validation_passed_when_all_field_good() throws ValidateException {
-        assertEquals(0, ctrl.findAll().size(), "Size is not equal");
+    public void whenAdd_should_status_200_and_film_returned_if_all_fields_good() throws Exception {
+        Mockito.when(controller.add(film)).thenReturn(film);
 
-        assertNotNull(ctrl.add(film));
-
-        assertEquals(1, ctrl.findAll().size(), "Size is not equal");
+        mvc.perform(post("/films").
+                        content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(film)));
     }
 
     @Test
-    void should_validation_not_passed_when_date_wrong() {
-        final Film film2 = new Film("fimName", "filmDescription", LocalDate.of(1895, 12, 27), 120);
-        final Film film3 = new Film("fimName", "filmDescription", LocalDate.now().plusDays(1), 100);
+    public void whenAdd_should_status_400_if_name_is_blank() throws Exception {
+        film = new Film("  ", GOOD_DESCRIPTION, GOOD_DATE, GOOD_DURATION);
 
-        assertThrows(ValidateDateException.class,
-                () -> ctrl.add(film2), "Before-Date validation passed");
-
-        assertThrows(ValidateDateException.class,
-                () -> ctrl.add(film3), "Future-Date validation passed");
-
+        mvc.perform(post("/films")
+                .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void should_creating_not_passed_when_date_is_null() {
-
+    public void whenAdd_should_status_400_if_name_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new Film("fimName", "filmDescription", null, 120), "Exception not thrown");
-
+                () -> new Film(null, GOOD_DESCRIPTION,GOOD_DATE, GOOD_DURATION),
+                "Exception not thrown");
     }
 
     @Test
-    void should_creating_passed_when_date_is_not_null() {
-        Film film2;
+    public void whenAdd_should_status_400_if_description_is_longer_200() throws Exception {
+        film.setDescription(new String(new char[201]));
 
-        try {
-            film2 = new Film("fimName", "filmDescription", LocalDate.of(1895, 12, 27), 120);
-            assertNotNull(film2);
-        } catch (NullPointerException e) {
-            fail("Exception thrown");
-        }
+        mvc.perform(post("/films")
+                .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void should_validation_not_passed_when_description_wrong() {
-        film.setDescription("aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa "
-                + "aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa "
-                + "aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa aaaaaaaaa a");
-
-        assertEquals(201, film.getDescription().length(),"Description length = "
-                + film.getDescription().length());
-
-        assertThrows(ValidateDescriptionException.class,
-                () -> ctrl.add(film), "Description validation passed");
-    }
-
-    @Test
-    void should_validation_not_passed_when_duration_wrong() {
-        Film film2;
-        film2 = new Film("fimName", "filmDescription", LocalDate.of(1895, 12, 28), 0);
-
-        assertThrows(ValidateDurationException.class,
-                () -> ctrl.add(film2), "Date validation passed");
-    }
-
-    @Test
-    void should_validation_not_passed_when_name_is_blank() {
-        Film film2;
-        film2 = new Film("   ", "filmDescription", LocalDate.of(1895, 12, 28), 100);
-
-        assertThrows(ValidateNameException.class,
-                () -> ctrl.add(film2), "Name validation passed");
-    }
-
-    @Test
-    void should_creating_not_passed_when_name_is_null() {
+    void whenAdd_should_status_400_if_date_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new Film(null, "filmDescription", LocalDate.of(1895, 12, 28), 1000),
-                "Name creating passed");
+                () -> new Film(GOOD_NAME, GOOD_DESCRIPTION, null, GOOD_DURATION),
+                "Exception not thrown");
     }
 
+    @Test
+    void whenAdd_should_status_400_if_date_is_before_cinema_day() throws Exception {
+        film = new Film(GOOD_NAME, GOOD_DESCRIPTION, CINEMA_DAY.minusDays(1), GOOD_DURATION);
 
+        mvc.perform(post("/films")
+                        .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void whenAdd_should_status_400_if_date_is_future() throws Exception {
+        film = new Film(GOOD_NAME, GOOD_DESCRIPTION, CURRENT_DAY.plusDays(1), GOOD_DURATION);
+
+        mvc.perform(post("/films")
+                        .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void whenAdd_should_status_400_if_duration_is_not_positive() throws Exception {
+        film = new Film(GOOD_NAME, GOOD_DESCRIPTION,GOOD_DATE, -1);
+
+        mvc.perform(post("/films")
+                .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    private Film getGoodNewFilm() {
+        return new Film(GOOD_NAME, GOOD_DESCRIPTION, GOOD_DATE, GOOD_DURATION);
+    }
 }
