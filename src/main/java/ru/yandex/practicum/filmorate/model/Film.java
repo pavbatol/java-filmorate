@@ -2,12 +2,14 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import lombok.NonNull;
-import ru.yandex.practicum.filmorate.validator.annotationed.FromCinemaDayToCurrent;
+import ru.yandex.practicum.filmorate.validator.annotationed.FromToNow;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+
+import static java.time.Month.DECEMBER;
 
 @Data
 public class Film {
@@ -23,7 +25,7 @@ public class Film {
     private String description;
 
     @NonNull
-    @FromCinemaDayToCurrent()
+    @FromToNow(year = 1895, month = DECEMBER, dayOfMonth = 28)
     private final LocalDate releaseDate;
 
     @Positive
