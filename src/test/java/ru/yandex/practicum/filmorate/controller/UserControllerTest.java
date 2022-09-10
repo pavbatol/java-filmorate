@@ -28,6 +28,7 @@ class UserControllerTest {
     @SpyBean
     UserController controller;
     private User user;
+    private static final long GOOD_ID = 0;
     private static final String GOOD_EMAIL = "test@test.ru";
     private static final String GOOD_LOGIN = "testLogin";
     private static final String GOOD_NAME = "testName";
@@ -36,7 +37,7 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        controller.clear();
+        controller.clearStorage();
         user = getGoodNewUser();
     }
 
@@ -53,13 +54,13 @@ class UserControllerTest {
     @Test
     public void whenAdd_should_status_400_if_email_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new User(null, GOOD_LOGIN, GOOD_DATE),
+                () -> new User(GOOD_ID, null, GOOD_LOGIN, GOOD_NAME, GOOD_DATE),
                 "Exception not thrown");
     }
 
     @Test
     public void whenAdd_should_status_400_if_email_is_blank() throws Exception {
-        user = new User("  ", GOOD_LOGIN, GOOD_DATE);
+        user = new User(GOOD_ID, "  ", GOOD_LOGIN, GOOD_NAME, GOOD_DATE);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -68,7 +69,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_email_not_have_dog() throws Exception {
-        user = new User("test_test.ru", GOOD_LOGIN, GOOD_DATE);
+        user = new User(GOOD_ID, "test_test.ru", GOOD_LOGIN, GOOD_NAME, GOOD_DATE);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -77,7 +78,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_email_is_wrong() throws Exception {
-        user = new User("@testtest.ru", GOOD_LOGIN, GOOD_DATE);
+        user = new User(GOOD_ID, "@testtest.ru", GOOD_LOGIN, GOOD_NAME, GOOD_DATE);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -86,7 +87,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_login_is_blank() throws Exception {
-        user = new User(GOOD_EMAIL, "   ", GOOD_DATE);
+        user = new User(GOOD_ID, GOOD_EMAIL, "   ", GOOD_NAME,  GOOD_DATE);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -95,7 +96,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_login_have_whitespace() throws Exception {
-        user = new User(GOOD_EMAIL, "my login", GOOD_DATE);
+        user = new User(GOOD_ID, GOOD_EMAIL, "my login", GOOD_NAME, GOOD_DATE);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -129,13 +130,13 @@ class UserControllerTest {
     @Test
     void whenAdd_should_status_400_if_date_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new User(GOOD_EMAIL, GOOD_LOGIN, null),
+                () -> new User(GOOD_ID, GOOD_EMAIL, GOOD_LOGIN, GOOD_NAME, null),
                 "Exception not thrown");
     }
 
     @Test
     void whenAdd_should_status_400_if_date_is_not_past() throws Exception {
-        user = new User(GOOD_EMAIL, GOOD_LOGIN, CURRENT_DAY);
+        user = new User(GOOD_ID, GOOD_EMAIL, GOOD_LOGIN, GOOD_NAME, CURRENT_DAY);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -143,22 +144,6 @@ class UserControllerTest {
     }
 
     private User getGoodNewUser() {
-        return new User(GOOD_EMAIL, GOOD_LOGIN, GOOD_DATE);
-    }
-
-    private User getNewUser(String name) {
-        User user = new User(GOOD_EMAIL, GOOD_LOGIN, GOOD_DATE);
-        user.setName(name);
-        return user;
-    }
-
-    private String getGoodNewUserAsJson() {
-        return '{'
-                + "\"id\":0,"
-                + "\"email\":\"" +GOOD_EMAIL + "\","
-                + "\"login\":\"" +GOOD_LOGIN + "\","
-                + "\"name\":\"" +GOOD_NAME + "\","
-                + "\"birthday\":\"" +GOOD_DATE + "\""
-                + '}';
+        return new User(GOOD_ID, GOOD_EMAIL, GOOD_LOGIN, GOOD_NAME, GOOD_DATE);
     }
 }

@@ -12,8 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Validated
+
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -71,7 +72,7 @@ public class UserController {
         }
     }
 
-    protected void clear() {
+    protected void clearStorage() {
         users.clear();
     }
 }
