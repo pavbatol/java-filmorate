@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
+import lombok.experimental.NonFinal;
 import ru.yandex.practicum.filmorate.validator.annotationed.FromToNow;
 
 import javax.validation.constraints.NotBlank;
@@ -11,23 +11,27 @@ import java.time.LocalDate;
 
 import static java.time.Month.DECEMBER;
 
-@Data
+@Value
+@Builder(toBuilder = true)
+@AllArgsConstructor
 public class Film {
 
-    private long id;
+    @NonFinal
+    @Setter
+    long id;
 
     @NonNull
     @NotBlank
-    private final String name;
+    String name;
 
     @NonNull
     @Size(max = 200)
-    private String description;
+    String description;
 
     @NonNull
     @FromToNow(year = 1895, month = DECEMBER, dayOfMonth = 28)
-    private final LocalDate releaseDate;
+    LocalDate releaseDate;
 
     @Positive
-    private final long duration;
+    long duration;
 }

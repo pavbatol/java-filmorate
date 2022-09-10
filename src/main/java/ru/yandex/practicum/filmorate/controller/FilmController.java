@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Validated
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/films")
 public class FilmController {
@@ -60,7 +60,8 @@ public class FilmController {
         }
     }
 
-    protected void clear() {
+    protected void clearStorage() {
         films.clear();
     }
 }
+

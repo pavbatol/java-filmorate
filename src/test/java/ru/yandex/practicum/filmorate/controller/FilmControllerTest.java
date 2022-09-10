@@ -28,6 +28,7 @@ class FilmControllerTest {
     @SpyBean
     FilmController controller;
     private Film film;
+    private static final long GOOD_ID = 0;
     private static final String GOOD_NAME = "Test";
     private static final String GOOD_DESCRIPTION = "TestTest TestTest";
     private static final LocalDate GOOD_DATE = LocalDate.now().minusDays(1);
@@ -37,7 +38,7 @@ class FilmControllerTest {
 
     @BeforeEach
     void setUp() {
-        controller.clear();
+        controller.clearStorage();
         film = getGoodNewFilm();
     }
 
@@ -53,7 +54,7 @@ class FilmControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_name_is_blank() throws Exception {
-        film = new Film("  ", GOOD_DESCRIPTION, GOOD_DATE, GOOD_DURATION);
+        film = film.toBuilder().name("  ").build();
 
         mvc.perform(post("/films")
                 .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
@@ -63,13 +64,13 @@ class FilmControllerTest {
     @Test
     public void whenAdd_should_status_400_if_name_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new Film(null, GOOD_DESCRIPTION,GOOD_DATE, GOOD_DURATION),
+                () -> new Film(GOOD_ID, null, GOOD_DESCRIPTION,GOOD_DATE, GOOD_DURATION),
                 "Exception not thrown");
     }
 
     @Test
     public void whenAdd_should_status_400_if_description_is_longer_200() throws Exception {
-        film.setDescription(new String(new char[201]));
+        film = film.toBuilder().description(new String(new char[201])).build();
 
         mvc.perform(post("/films")
                 .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
@@ -79,13 +80,13 @@ class FilmControllerTest {
     @Test
     void whenAdd_should_status_400_if_date_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new Film(GOOD_NAME, GOOD_DESCRIPTION, null, GOOD_DURATION),
+                () -> new Film(GOOD_ID, GOOD_NAME, GOOD_DESCRIPTION, null, GOOD_DURATION),
                 "Exception not thrown");
     }
 
     @Test
     void whenAdd_should_status_400_if_date_is_before_cinema_day() throws Exception {
-        film = new Film(GOOD_NAME, GOOD_DESCRIPTION, CINEMA_DAY.minusDays(1), GOOD_DURATION);
+        film = new Film(GOOD_ID, GOOD_NAME, GOOD_DESCRIPTION, CINEMA_DAY.minusDays(1), GOOD_DURATION);
 
         mvc.perform(post("/films")
                         .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
@@ -94,7 +95,7 @@ class FilmControllerTest {
 
     @Test
     void whenAdd_should_status_400_if_date_is_future() throws Exception {
-        film = new Film(GOOD_NAME, GOOD_DESCRIPTION, CURRENT_DAY.plusDays(1), GOOD_DURATION);
+        film = new Film(GOOD_ID, GOOD_NAME, GOOD_DESCRIPTION, CURRENT_DAY.plusDays(1), GOOD_DURATION);
 
         mvc.perform(post("/films")
                         .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
@@ -103,7 +104,7 @@ class FilmControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_duration_is_not_positive() throws Exception {
-        film = new Film(GOOD_NAME, GOOD_DESCRIPTION,GOOD_DATE, -1);
+        film = new Film(GOOD_ID, GOOD_NAME, GOOD_DESCRIPTION,GOOD_DATE, -1);
 
         mvc.perform(post("/films")
                 .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
@@ -111,6 +112,12 @@ class FilmControllerTest {
     }
 
     private Film getGoodNewFilm() {
-        return new Film(GOOD_NAME, GOOD_DESCRIPTION, GOOD_DATE, GOOD_DURATION);
+        return Film.builder()
+                .id(GOOD_ID)
+                .name(GOOD_NAME)
+                .description(GOOD_DESCRIPTION)
+                .releaseDate(GOOD_DATE)
+                .duration(GOOD_DURATION)
+                .build();
     }
 }
