@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
@@ -37,7 +38,7 @@ public class UserController {
         editName(user);
         if (!users.containsKey(user.getId())) {
             log.warn("Такого id нет: {}", user.getId());
-            throw new ValidateException("Такого id нет:" + user.getId());
+            throw new NotFoundException("Такого id нет:" + user.getId());
         }
         users.put(user.getId(), user);
         log.info("Обновлен пользователь {}", user);
