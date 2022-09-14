@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.validator;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.ValidateDateException;
 import ru.yandex.practicum.filmorate.exception.ValidateEmailException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
@@ -8,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
+@Slf4j
 public final class UserValidator {
     private UserValidator() {
     }
@@ -27,6 +29,15 @@ public final class UserValidator {
         if (user.getBirthday() == null
                 || user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidateDateException("Дата рождения не может быть в будущем");
+        }
+    }
+
+    public static void runValidation(User obj) throws ValidateException {
+        try {
+            validate(obj);
+        } catch (ValidateException e) {
+            log.warn("Валидация полей для " + obj.getClass().getSimpleName() + " не пройдена: " + e.getMessage());
+            throw e;
         }
     }
 }
