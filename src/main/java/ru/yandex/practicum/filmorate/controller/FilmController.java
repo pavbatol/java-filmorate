@@ -1,15 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.impl.InMemoryFilmStorage;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
 import static ru.yandex.practicum.filmorate.validator.FilmValidator.runValidation;
 
@@ -17,44 +16,26 @@ import static ru.yandex.practicum.filmorate.validator.FilmValidator.runValidatio
 @Validated
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
-    long lastId;
-    private final Map<Long, Film> films = new HashMap<>();
+
+    private final InMemoryFilmStorage storage;
 
     @GetMapping
-    public  List<Film> findAll() {
-        log.debug("Текущее количество фильмов: {}", films.size());
-        return List.copyOf(films.values()) ;
+    public Collection<Film> findAll() {
+        return storage.findAll();
     }
 
     @PostMapping
     public Film add(@Valid @RequestBody Film film) {
         runValidation(film);
-        film.setId(generateId());
-        films.put(film.getId(), film);
-        log.debug("Добавлен фильм {}", film);
-        return film;
+        return storage.add(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
         runValidation(film);
-        if (!films.containsKey(film.getId())) {
-            String message = "Такого id нет: " + film.getId();
-            log.error(message);
-            throw new NotFoundException(message);
-        }
-        films.put(film.getId(), film);
-        log.debug("Обновлен фильм {}", film);
-        return film;
-    }
-
-    private long generateId() {
-        return ++lastId;
-    }
-
-    protected void clearStorage() {
-        films.clear();
+        return storage.update(film);
     }
 }
 

@@ -40,4 +40,13 @@ public final class UserValidator {
             throw e;
         }
     }
+
+    public static void editName(User user) {
+        if (user == null) {
+            return;
+        }
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+    }
 }
