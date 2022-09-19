@@ -10,20 +10,12 @@ import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import java.util.Collection;
 
-import static ru.yandex.practicum.filmorate.validator.FilmValidator.runValidation;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class InMemoryFilmStorage
         extends AbstractInMemoryStorage<Film>
         implements FilmStorage {
-
-    @Override
-    public Collection<Film> findAll() {
-        log.debug("Текущее количество фильмов: {}", storage.size());
-        return storage.values();
-    }
 
     @Override
     public Film add(Film film) {
@@ -44,4 +36,12 @@ public class InMemoryFilmStorage
         log.debug("Обновлен фильм {}", film);
         return film;
     }
+
+    @Override
+    public Collection<Film> findAll() {
+        log.debug("Текущее количество фильмов: {}", storage.size());
+        return storage.values();
+    }
+
+
 }

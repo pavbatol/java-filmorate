@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.impl.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -19,7 +19,7 @@ import static ru.yandex.practicum.filmorate.validator.FilmValidator.runValidatio
 @RequiredArgsConstructor
 public class FilmController {
 
-    private final InMemoryFilmStorage storage;
+    private final FilmStorage storage;
 
     @GetMapping
     public Collection<Film> findAll() {

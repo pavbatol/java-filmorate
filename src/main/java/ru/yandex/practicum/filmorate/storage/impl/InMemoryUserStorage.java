@@ -8,19 +8,12 @@ import ru.yandex.practicum.filmorate.storage.abstracts.AbstractInMemoryStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.util.Collection;
-import java.util.List;
 
 @Slf4j
 @Component
 public class InMemoryUserStorage
         extends AbstractInMemoryStorage<User>
         implements UserStorage {
-
-    @Override
-    public Collection<User> findAll() {
-        log.debug("Текущее количество пользователей: {}", storage.size());
-        return List.copyOf(storage.values()) ;
-    }
 
     @Override
     public User add(User user) {
@@ -41,4 +34,12 @@ public class InMemoryUserStorage
         log.debug("Обновлен пользователь {}", user);
         return user;
     }
+
+    @Override
+    public Collection<User> findAll() {
+        log.debug("Текущее количество пользователей: {}", storage.size());
+        return storage.values();
+    }
+
+
 }

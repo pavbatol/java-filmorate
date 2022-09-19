@@ -1,11 +1,10 @@
 package ru.yandex.practicum.filmorate.validator;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.ValidateDateException;
-import ru.yandex.practicum.filmorate.exception.ValidateEmailException;
-import ru.yandex.practicum.filmorate.exception.ValidateException;
-import ru.yandex.practicum.filmorate.exception.ValidateLoginException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
+import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.time.LocalDate;
 

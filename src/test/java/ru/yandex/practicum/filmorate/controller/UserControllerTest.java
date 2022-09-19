@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.MockMvcTest;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,16 +30,17 @@ class UserControllerTest {
     @SpyBean
     UserController controller;
     private User user;
-    private static final long GOOD_ID = 0;
-    private static final String GOOD_EMAIL = "test@test.ru";
-    private static final String GOOD_LOGIN = "testLogin";
-    private static final String GOOD_NAME = "testName";
-    private static final LocalDate GOOD_DATE = LocalDate.now().minusDays(1);
+    private static final long VALID_ID = 0;
+    private static final String VALID_EMAIL = "test@test.ru";
+    private static final String VALID_LOGIN = "testLogin";
+    private static final String VALID_NAME = "testName";
+    private static final LocalDate VALID_DATE = LocalDate.now().minusDays(1);
+    private static final Set<Long> VALID_FRIENDS = new HashSet<>();
     private static final LocalDate CURRENT_DAY =  LocalDate.now();
 
     @BeforeEach
     void setUp() {
-        user = getGoodNewUser();
+        user = getNewValidUser();
     }
 
     @Test
@@ -53,13 +56,13 @@ class UserControllerTest {
     @Test
     public void whenAdd_should_status_400_if_email_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new User(GOOD_ID, null, GOOD_LOGIN, GOOD_NAME, GOOD_DATE),
+                () -> new User(VALID_ID, null, VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS),
                 "Exception not thrown");
     }
 
     @Test
     public void whenAdd_should_status_400_if_email_is_blank() throws Exception {
-        user = new User(GOOD_ID, "  ", GOOD_LOGIN, GOOD_NAME, GOOD_DATE);
+        user = new User(VALID_ID, "  ", VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -68,7 +71,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_email_not_have_dog() throws Exception {
-        user = new User(GOOD_ID, "test_test.ru", GOOD_LOGIN, GOOD_NAME, GOOD_DATE);
+        user = new User(VALID_ID, "test_test.ru", VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -77,7 +80,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_email_is_wrong() throws Exception {
-        user = new User(GOOD_ID, "@testtest.ru", GOOD_LOGIN, GOOD_NAME, GOOD_DATE);
+        user = new User(VALID_ID, "@testtest.ru", VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -86,7 +89,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_login_is_blank() throws Exception {
-        user = new User(GOOD_ID, GOOD_EMAIL, "   ", GOOD_NAME,  GOOD_DATE);
+        user = new User(VALID_ID, VALID_EMAIL, "   ", VALID_NAME, VALID_DATE, VALID_FRIENDS);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -95,7 +98,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_login_have_whitespace() throws Exception {
-        user = new User(GOOD_ID, GOOD_EMAIL, "my login", GOOD_NAME, GOOD_DATE);
+        user = new User(VALID_ID, VALID_EMAIL, "my login", VALID_NAME, VALID_DATE, VALID_FRIENDS);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -129,20 +132,20 @@ class UserControllerTest {
     @Test
     void whenAdd_should_status_400_if_date_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new User(GOOD_ID, GOOD_EMAIL, GOOD_LOGIN, GOOD_NAME, null),
+                () -> new User(VALID_ID, VALID_EMAIL, VALID_LOGIN, VALID_NAME, null, VALID_FRIENDS),
                 "Exception not thrown");
     }
 
     @Test
     void whenAdd_should_status_400_if_date_is_not_past() throws Exception {
-        user = new User(GOOD_ID, GOOD_EMAIL, GOOD_LOGIN, GOOD_NAME, CURRENT_DAY);
+        user = new User(VALID_ID, VALID_EMAIL, VALID_LOGIN, VALID_NAME, CURRENT_DAY, VALID_FRIENDS);
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
-    private User getGoodNewUser() {
-        return new User(GOOD_ID, GOOD_EMAIL, GOOD_LOGIN, GOOD_NAME, GOOD_DATE);
+    private User getNewValidUser() {
+        return new User(VALID_ID, VALID_EMAIL, VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS);
     }
 }

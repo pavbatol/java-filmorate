@@ -7,6 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Value
 @Builder(toBuilder = true)
@@ -32,5 +33,9 @@ public class User {
     @NonNull
     @Past
     LocalDate birthday;
+
+    @NonFinal
+    @Setter
+    Set<Long> friends;
 }
 
