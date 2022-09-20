@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.MockMvcTest;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.time.Month.DECEMBER;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -29,12 +31,13 @@ class FilmControllerTest {
     @SpyBean
     FilmController controller;
     private Film film;
-    private static final long GOOD_ID = 0;
-    private static final String GOOD_NAME = "Test";
-    private static final String GOOD_DESCRIPTION = "TestTest TestTest";
-    private static final LocalDate GOOD_DATE = LocalDate.now().minusDays(1);
-    private static final long GOOD_DURATION = 1;
+    private static final long VALID_ID = 0;
+    private static final String VALID_NAME = "Test";
+    private static final String VALID_DESCRIPTION = "TestTest TestTest";
+    private static final LocalDate VALID_DATE = LocalDate.now().minusDays(1);
+    private static final long VALID_DURATION = 1;
     private static final LocalDate CINEMA_DAY =  LocalDate.of(1895, DECEMBER, 28);
+    private static final Set<Long> VALID_LIKES = null; //new HashSet<>();
     private static final LocalDate CURRENT_DAY =  LocalDate.now();
 
     @BeforeEach
@@ -66,7 +69,7 @@ class FilmControllerTest {
     @Test
     public void whenAdd_should_status_400_if_name_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new Film(GOOD_ID, null, GOOD_DESCRIPTION,GOOD_DATE, GOOD_DURATION),
+                () -> new Film(VALID_ID, null, VALID_DESCRIPTION, VALID_DATE, VALID_DURATION, VALID_LIKES),
                 "Exception not thrown");
     }
 
@@ -82,13 +85,13 @@ class FilmControllerTest {
     @Test
     void whenAdd_should_status_400_if_date_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new Film(GOOD_ID, GOOD_NAME, GOOD_DESCRIPTION, null, GOOD_DURATION),
+                () -> new Film(VALID_ID, VALID_NAME, VALID_DESCRIPTION, null, VALID_DURATION, VALID_LIKES),
                 "Exception not thrown");
     }
 
     @Test
     void whenAdd_should_status_400_if_date_is_before_cinema_day() throws Exception {
-        film = new Film(GOOD_ID, GOOD_NAME, GOOD_DESCRIPTION, CINEMA_DAY.minusDays(1), GOOD_DURATION);
+        film = new Film(VALID_ID, VALID_NAME, VALID_DESCRIPTION, CINEMA_DAY.minusDays(1), VALID_DURATION, VALID_LIKES);
 
         mvc.perform(post("/films")
                         .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
@@ -97,7 +100,7 @@ class FilmControllerTest {
 
     @Test
     void whenAdd_should_status_400_if_date_is_future() throws Exception {
-        film = new Film(GOOD_ID, GOOD_NAME, GOOD_DESCRIPTION, CURRENT_DAY.plusDays(1), GOOD_DURATION);
+        film = new Film(VALID_ID, VALID_NAME, VALID_DESCRIPTION, CURRENT_DAY.plusDays(1), VALID_DURATION, VALID_LIKES);
 
         mvc.perform(post("/films")
                         .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
@@ -106,7 +109,7 @@ class FilmControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_duration_is_not_positive() throws Exception {
-        film = new Film(GOOD_ID, GOOD_NAME, GOOD_DESCRIPTION,GOOD_DATE, -1);
+        film = new Film(VALID_ID, VALID_NAME, VALID_DESCRIPTION, VALID_DATE, -1, VALID_LIKES);
 
         mvc.perform(post("/films")
                 .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
@@ -115,11 +118,11 @@ class FilmControllerTest {
 
     private Film getGoodNewFilm() {
         return Film.builder()
-                .id(GOOD_ID)
-                .name(GOOD_NAME)
-                .description(GOOD_DESCRIPTION)
-                .releaseDate(GOOD_DATE)
-                .duration(GOOD_DURATION)
+                .id(VALID_ID)
+                .name(VALID_NAME)
+                .description(VALID_DESCRIPTION)
+                .releaseDate(VALID_DATE)
+                .duration(VALID_DURATION)
                 .build();
     }
 }

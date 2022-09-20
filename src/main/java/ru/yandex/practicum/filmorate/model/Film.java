@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Set;
 
 import static java.time.Month.DECEMBER;
 
@@ -34,4 +35,8 @@ public class Film {
 
     @Positive
     long duration;
+
+    @NonFinal
+    @Setter
+    Set<Long> likes;
 }
