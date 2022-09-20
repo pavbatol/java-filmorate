@@ -62,7 +62,7 @@ public class UserService extends AbstractService<User> {
     public List<User> findMutualFriends(Long userId, Long friendId) {
         User user = validateId(userStorage, userId);
         User friend = validateId(userStorage, friendId);
-        List<User> result = isNull(user.getFriends(), friend.getFriends())
+        List<User> result = isAnyNull(user.getFriends(), friend.getFriends())
                 ? List.of()
                 : user.getFriends().stream()
                         .filter(friend.getFriends()::contains)
@@ -79,7 +79,7 @@ public class UserService extends AbstractService<User> {
                     return user.getFriends();});
     }
 
-    private boolean isNull(Object... o) {
+    private boolean isAnyNull(Object... o) {
         return Arrays.stream(o).anyMatch(Objects::isNull);
     }
 }
