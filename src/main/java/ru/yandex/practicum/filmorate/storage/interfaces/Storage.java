@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.interfaces;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface Storage<T> {
@@ -11,10 +11,9 @@ public interface Storage<T> {
 
     T remove(Long id);
 
-    Collection<T> findAll();
+    List<T> findAll();
 
     Optional<T> findById(Long id);
 
     boolean contains(Long id);
-
 }

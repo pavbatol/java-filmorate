@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -8,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.abstracts.AbstractInMemoryStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -18,7 +19,7 @@ public class InMemoryFilmStorage
         implements FilmStorage {
 
     @Override
-    public Film add(Film film) {
+    public Film add(@NonNull Film film) {
         film.setId(generateId());
         storage.put(film.getId(), film);
         log.debug("Добавлен фильм {}", film);
@@ -26,7 +27,7 @@ public class InMemoryFilmStorage
     }
 
     @Override
-    public Film update(Film film) {
+    public Film update(@NonNull Film film) {
         if (!storage.containsKey(film.getId())) {
             String message = "Такого id нет: " + film.getId();
             log.error(message);
@@ -38,10 +39,8 @@ public class InMemoryFilmStorage
     }
 
     @Override
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         log.debug("Текущее количество фильмов: {}", storage.size());
-        return storage.values();
+        return List.copyOf(storage.values());
     }
-
-
 }

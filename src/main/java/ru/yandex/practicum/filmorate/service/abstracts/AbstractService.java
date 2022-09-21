@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import ru.yandex.practicum.filmorate.service.interfaces.Service;
 import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
-import java.util.Collection;
+import java.util.List;
 
-import static ru.yandex.practicum.filmorate.validator.common.CommonValidator.validateId;
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
 
 @RequiredArgsConstructor
 public abstract class AbstractService<T> implements Service<T> {
@@ -28,12 +28,12 @@ public abstract class AbstractService<T> implements Service<T> {
         return storage.remove(id);
     }
     @Override
-    public Collection<T> findAll() {
+    public List<T> findAll() {
         return storage.findAll();
     }
 
     @Override
     public T findById(Long id) {
-        return validateId(storage, id);
+        return getNonNullObject(storage, id);
     }
 }

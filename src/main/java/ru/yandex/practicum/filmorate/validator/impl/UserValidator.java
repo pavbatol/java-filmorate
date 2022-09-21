@@ -1,19 +1,18 @@
-package ru.yandex.practicum.filmorate.validator;
+package ru.yandex.practicum.filmorate.validator.impl;
 
-import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.*;
+import lombok.NonNull;
+import ru.yandex.practicum.filmorate.exception.ValidateDateException;
+import ru.yandex.practicum.filmorate.exception.ValidateEmailException;
+import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.exception.ValidateLoginException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.validator.AbsractValidator;
 
 import java.time.LocalDate;
 
-@Slf4j
-public final class UserValidator {
-    private UserValidator() {
-    }
-
-    public static void validate(User user) throws ValidateException {
+public class UserValidator<T> extends AbsractValidator<User> {
+    @Override
+    public void validate(User user) throws ValidateException {
         if (user == null) {
             throw new ValidateException("Полученный объект User не инициализирован");
         }
@@ -31,19 +30,7 @@ public final class UserValidator {
         }
     }
 
-    public static void runValidation(User obj) throws ValidateException {
-        try {
-            validate(obj);
-        } catch (ValidateException e) {
-            log.warn("Валидация полей для " + obj.getClass().getSimpleName() + " не пройдена: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    public static void editName(User user) {
-        if (user == null) {
-            return;
-        }
+    public static void editName(@NonNull User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }

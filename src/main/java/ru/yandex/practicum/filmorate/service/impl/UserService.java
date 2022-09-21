@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.filmorate.validator.common.CommonValidator.validateId;
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
 
 @Slf4j
 @Service
@@ -26,8 +26,8 @@ public class UserService extends AbstractService<User> {
     }
 
     public User addFriend(Long userId, Long friendId) {
-        User user = validateId(userStorage, userId);
-        User friend = validateId(userStorage, friendId);
+        User user = getNonNullObject(userStorage, userId);
+        User friend = getNonNullObject(userStorage, friendId);
         log.debug(Optional.of(getWithSetFriendsKeeper(user))
                 .filter(f -> f.add(friendId))
                 .isPresent()
@@ -38,8 +38,8 @@ public class UserService extends AbstractService<User> {
     }
 
     public User removeFriend(Long userId, Long friendId) {
-        User user = validateId(userStorage, userId);
-        User friend = validateId(userStorage, friendId);
+        User user = getNonNullObject(userStorage, userId);
+        User friend = getNonNullObject(userStorage, friendId);
         log.debug(Optional.of(getWithSetFriendsKeeper(user))
                 .filter(f -> f.remove(friendId))
                 .isPresent()
@@ -49,7 +49,7 @@ public class UserService extends AbstractService<User> {
     }
 
     public List<User> findFriends(Long userId) {
-        User user = validateId(userStorage, userId);
+        User user = getNonNullObject(userStorage, userId);
         List<User> result = Objects.isNull(user.getFriends())
                 ? List.of()
                 : user.getFriends().stream()
@@ -60,8 +60,8 @@ public class UserService extends AbstractService<User> {
     }
 
     public List<User> findMutualFriends(Long userId, Long friendId) {
-        User user = validateId(userStorage, userId);
-        User friend = validateId(userStorage, friendId);
+        User user = getNonNullObject(userStorage, userId);
+        User friend = getNonNullObject(userStorage, friendId);
         List<User> result = isAnyNull(user.getFriends(), friend.getFriends())
                 ? List.of()
                 : user.getFriends().stream()

@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service.interfaces;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface Service<T> {
 
@@ -10,7 +10,7 @@ public interface Service<T> {
 
     T remove(Long id);
 
-    Collection<T> findAll();
+    List<T> findAll();
 
     T findById(Long id);
 }

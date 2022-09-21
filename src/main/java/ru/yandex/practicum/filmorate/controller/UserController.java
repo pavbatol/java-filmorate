@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
@@ -9,14 +8,10 @@ import ru.yandex.practicum.filmorate.service.impl.UserService;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.validator.UserValidator.editName;
-import static ru.yandex.practicum.filmorate.validator.UserValidator.runValidation;
-import static ru.yandex.practicum.filmorate.validator.common.CommonValidator.validateId;
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.*;
 
-@Slf4j
 @Validated
 @RestController
 @RequestMapping("/users")
@@ -28,28 +23,20 @@ public class UserController {
 
     @PostMapping
     public User add(@Valid @RequestBody User user) {
-        runValidation(user);
-        editName(user);
+        validateUser(user);
+        editUserName(user);
         return service.add(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        runValidation(user);
-        editName(user);
+        validateUser(user);
+        editUserName(user);
         return service.update(user);
     }
 
-    @DeleteMapping("/{id}/friends/{friendId}")
-    public User remove(@PathVariable(value = "id") Long userId,
-                       @PathVariable(value = "friendId") Long friendId) {
-        validateId(storage, userId);
-        validateId(storage, friendId);
-        return service.removeFriend(userId, friendId);
-    }
-
     @GetMapping
-    public Collection<User> findAll() {
+    public List<User> findAll() {
         return service.findAll();
     }
 
@@ -64,6 +51,14 @@ public class UserController {
         validateId(storage, userId);
         validateId(storage, friendId);
         return service.addFriend(userId, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public User removeFriend(@PathVariable(value = "id") Long userId,
+                             @PathVariable(value = "friendId") Long friendId) {
+        validateId(storage, userId);
+        validateId(storage, friendId);
+        return service.removeFriend(userId, friendId);
     }
 
     @GetMapping("/{id}/friends")

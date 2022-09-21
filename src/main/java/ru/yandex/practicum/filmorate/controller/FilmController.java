@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -10,14 +9,12 @@ import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import javax.validation.Valid;
-import java.util.Collection;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.validator.FilmValidator.runValidation;
-import static ru.yandex.practicum.filmorate.validator.common.CommonValidator.validateId;
-import static ru.yandex.practicum.filmorate.validator.common.CommonValidator.validatePositive;
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateFilm;
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateId;
 
-@Slf4j
 @Validated
 @RestController
 @RequestMapping("/films")
@@ -30,18 +27,18 @@ public class FilmController {
 
     @PostMapping
     public Film add(@Valid @RequestBody Film film) {
-        runValidation(film);
+        validateFilm(film);
         return service.add(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        runValidation(film);
+        validateFilm(film);
         return service.update(film);
     }
 
     @GetMapping
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         return service.findAll();
     }
 
@@ -67,8 +64,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> findPopularFilms(@RequestParam(defaultValue = "10", required = false) int count) {
-        validatePositive(count, "'count' не должен быть отрицательным");
+    public List<Film> findPopularFilms(
+            @RequestParam(defaultValue = "10", required = false)  @Positive int count) {
         return service.findPopularFilms(count);
     }
 }

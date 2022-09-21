@@ -4,19 +4,25 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.abstracts.AbstractService;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
-import java.util.*;
+import javax.validation.constraints.Positive;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.filmorate.validator.common.CommonValidator.validateId;
-import static ru.yandex.practicum.filmorate.validator.common.CommonValidator.validatePositive;
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateId;
 
 @Slf4j
 @Service
+@Validated
 public class FilmService extends AbstractService<Film> {
 
     FilmStorage filmStorage;
@@ -31,7 +37,7 @@ public class FilmService extends AbstractService<Film> {
 
     public Film addLike(Long filmId, Long userId) {
         validateId(userStorage, userId);
-        Film film = validateId(filmStorage, filmId);
+        Film film = getNonNullObject(filmStorage, filmId);
         log.debug(Optional.of(getWithSetLikesKeeper(film))
                 .filter(l -> l.add(userId))
                 .isPresent()
@@ -42,7 +48,7 @@ public class FilmService extends AbstractService<Film> {
 
     public Film removeLike(Long filmId, Long userId) {
         validateId(userStorage, userId);
-        Film film = validateId(filmStorage, filmId);
+        Film film = getNonNullObject(filmStorage, filmId);
         log.debug(Optional.of(getWithSetLikesKeeper(film))
                 .filter(l -> l.remove(userId))
                 .isPresent()
@@ -51,8 +57,7 @@ public class FilmService extends AbstractService<Film> {
         return film;
     }
 
-    public List<Film> findPopularFilms(int count) {
-        validatePositive(count, "'count' не должен быть отрицательным");
+    public List<Film> findPopularFilms(@Positive int count) {
         List<Film> result = filmStorage.findAll().stream()
                 .sorted(this::filmCompare)
                 .limit(count)

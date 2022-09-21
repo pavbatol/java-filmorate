@@ -26,8 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -81,8 +80,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return getResponseEntity(message, ex, status, request);
     }
 
+    @ExceptionHandler
+    protected ResponseEntity<Object> handleThrowableEx(Throwable ex, WebRequest request) {
+        String message = "Непредвиденная ошибка";
+        return getResponseEntity(message, ex, INTERNAL_SERVER_ERROR, request);
+    }
+
     private ResponseEntity<Object> getResponseEntity(String message,
-                                                     Exception ex,
+                                                     Throwable ex,
                                                      HttpStatus status,
                                                      WebRequest request) {
 
@@ -91,7 +96,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, status);
     }
 
-    private ErrorResponse getNewBody(String message, HttpStatus status, WebRequest request, Exception ex) {
+    private ErrorResponse getNewBody(String message, HttpStatus status, WebRequest request, Throwable ex) {
         List<String> reasons;
         if (ex instanceof BindException) {
             reasons = ((BindException) ex)
