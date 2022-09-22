@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.impl.User;
 import ru.yandex.practicum.filmorate.MockMvcTest;
 
 import java.time.LocalDate;
@@ -29,7 +29,7 @@ class UserControllerTest {
     private ObjectMapper objectMapper;
     @SpyBean
     UserController controller;
-    private User user;
+    private User validUser;
     private static final long VALID_ID = 0;
     private static final String VALID_EMAIL = "test@test.ru";
     private static final String VALID_LOGIN = "testLogin";
@@ -40,30 +40,29 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        user = getNewValidUser();
+        validUser = getNewValidUser();
     }
 
     @Test
     public void whenAdd_should_status_200_and_film_returned_if_all_fields_good() throws Exception {
-        Mockito.when(controller.add(user)).thenReturn(user);
+        Mockito.when(controller.add(validUser)).thenReturn(validUser);
 
         mvc.perform(post("/users").
-                        content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
+                        content(objectMapper.writeValueAsString(validUser)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(user)));
+                .andExpect(content().json(objectMapper.writeValueAsString(validUser)));
     }
 
     @Test
     public void whenAdd_should_status_400_if_email_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new User(VALID_ID, null, VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS),
+                () -> validUser.toBuilder().email(null).build(),
                 "Exception not thrown");
     }
 
     @Test
     public void whenAdd_should_status_400_if_email_is_blank() throws Exception {
-        user = new User(VALID_ID, "  ", VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS);
-
+        User user = validUser.toBuilder().email("  ").build();
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -71,8 +70,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_email_not_have_dog() throws Exception {
-        user = new User(VALID_ID, "test_test.ru", VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS);
-
+        User user = validUser.toBuilder().email("test_test.ru").build();
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -80,8 +78,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_email_is_wrong() throws Exception {
-        user = new User(VALID_ID, "@testtest.ru", VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS);
-
+        User user = validUser.toBuilder().email("@testtest.ru").build();
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -89,8 +86,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_login_is_blank() throws Exception {
-        user = new User(VALID_ID, VALID_EMAIL, "   ", VALID_NAME, VALID_DATE, VALID_FRIENDS);
-
+        User user = validUser.toBuilder().login("   ").build();
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -98,8 +94,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_400_if_login_have_whitespace() throws Exception {
-        user = new User(VALID_ID, VALID_EMAIL, "my login", VALID_NAME, VALID_DATE, VALID_FRIENDS);
-
+        User user = validUser.toBuilder().login("my login").build();
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -107,7 +102,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_200_if_name_is_blank() throws Exception {
-        user.setName("  ");
+        User user = validUser.toBuilder().name("  ").build();
         Mockito.when(controller.add(user)).thenReturn(user);
 
         mvc.perform(post("/users")
@@ -119,7 +114,7 @@ class UserControllerTest {
 
     @Test
     public void whenAdd_should_status_200_if_name_is_null() throws Exception {
-        user.setName(null);
+        User user = validUser.toBuilder().name(null).build();
         Mockito.when(controller.add(user)).thenReturn(user);
 
         mvc.perform(post("/users")
@@ -132,13 +127,13 @@ class UserControllerTest {
     @Test
     void whenAdd_should_status_400_if_date_is_null() {
         assertThrows(NullPointerException.class,
-                () -> new User(VALID_ID, VALID_EMAIL, VALID_LOGIN, VALID_NAME, null, VALID_FRIENDS),
+                () -> validUser.toBuilder().birthday(null).build(),
                 "Exception not thrown");
     }
 
     @Test
     void whenAdd_should_status_400_if_date_is_not_past() throws Exception {
-        user = new User(VALID_ID, VALID_EMAIL, VALID_LOGIN, VALID_NAME, CURRENT_DAY, VALID_FRIENDS);
+        User user = validUser.toBuilder().birthday(CURRENT_DAY).build();
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user)).contentType(MediaType.APPLICATION_JSON))
@@ -146,6 +141,14 @@ class UserControllerTest {
     }
 
     private User getNewValidUser() {
-        return new User(VALID_ID, VALID_EMAIL, VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS);
+//        return new User(VALID_ID, VALID_EMAIL, VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS);
+        return  User.builder()
+                .id(VALID_ID)
+                .email(VALID_EMAIL)
+                .login(VALID_LOGIN)
+                .name(VALID_NAME)
+                .birthday(VALID_DATE)
+                .friends(VALID_FRIENDS)
+                .build();
     }
 }

@@ -1,7 +1,8 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model.impl;
 
 import lombok.*;
 import lombok.experimental.NonFinal;
+import lombok.experimental.SuperBuilder;
 import ru.yandex.practicum.filmorate.validator.annotationed.FromToNow;
 
 import javax.validation.constraints.NotBlank;
@@ -13,13 +14,10 @@ import java.util.Set;
 import static java.time.Month.DECEMBER;
 
 @Value
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class Film {
-
-    @NonFinal
-    @Setter
-    long id;
+public class Film extends AbstractEntity{
 
     @NonNull
     @NotBlank

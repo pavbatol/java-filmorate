@@ -2,9 +2,9 @@ package ru.yandex.practicum.filmorate.validator.impl;
 
 import lombok.NonNull;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
+import ru.yandex.practicum.filmorate.model.impl.Film;
+import ru.yandex.practicum.filmorate.model.impl.User;
+import ru.yandex.practicum.filmorate.storage.Storage;
 
 import static ru.yandex.practicum.filmorate.validator.impl.UserValidator.editName;
 
@@ -12,11 +12,11 @@ public final class ValidatorManager {
     private ValidatorManager() {
     }
 
-    public static void validateFilm(Film obj) {
+    public static void validateEntity(Film obj) {
         new FilmValidator<Film>().runValidation(obj);
     }
 
-    public static void validateUser(User obj) {
+    public static void validateEntity(User obj) {
        new UserValidator<User>().runValidation(obj);
     }
 
@@ -30,6 +30,7 @@ public final class ValidatorManager {
         }
     }
 
+    @NonNull
     public static <T> T getNonNullObject(@NonNull Storage<T> storage, Long id) {
         return storage.findById(id)
                 .orElseThrow(() ->

@@ -16,9 +16,10 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import ru.yandex.practicum.filmorate.exception.AlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
@@ -36,6 +37,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleNotFoundEx(RuntimeException ex, WebRequest request) {
         String message = "Объект не найден";
         return getResponseEntity(message, ex, NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    protected ResponseEntity<Object> handleAlreadyExistsEx(RuntimeException ex, WebRequest request) {
+        String message = "Уже существует";
+        return getResponseEntity(message, ex, CONFLICT, request);
     }
 
     @ExceptionHandler({IncorrectParameterException.class, IllegalArgumentException.class})

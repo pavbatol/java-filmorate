@@ -1,7 +1,8 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model.impl;
 
 import lombok.*;
 import lombok.experimental.NonFinal;
+import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Past;
@@ -10,13 +11,10 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Value
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class User {
-
-    @NonFinal
-    @Setter
-    long id;
+public class User extends AbstractEntity {
 
     @NonNull
     @Email

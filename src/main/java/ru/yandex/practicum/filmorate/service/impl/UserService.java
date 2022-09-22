@@ -4,9 +4,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.abstracts.AbstractService;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.model.impl.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,26 +24,31 @@ public class UserService extends AbstractService<User> {
         this.userStorage = storage;
     }
 
+    @Override
+    protected String getGenericTypeName() {
+        return "Пользователь";
+    }
+
     public User addFriend(Long userId, Long friendId) {
         User user = getNonNullObject(userStorage, userId);
         User friend = getNonNullObject(userStorage, friendId);
-        log.debug(Optional.of(getWithSetFriendsKeeper(user))
-                .filter(f -> f.add(friendId))
+        log.debug(Optional.of(getFriendsKeeper(user))
+                .filter(friends -> friends.add(friendId))
                 .isPresent()
-                        ? String.format("Пользователь #%s добавлен в друзья к #%s", friendId, userId)
-                        : String.format("Пользователь #%s уже в друзьях у #%s", friendId, userId));
-        getWithSetFriendsKeeper(friend).add(userId);
+                        ? String.format("%s #%s добавлен в друзья к #%s", entityTypeName,  friendId, userId)
+                        : String.format("%s #%s уже в друзьях у #%s", entityTypeName,  friendId, userId));
+        getFriendsKeeper(friend).add(userId);
         return friend;
     }
 
     public User removeFriend(Long userId, Long friendId) {
         User user = getNonNullObject(userStorage, userId);
         User friend = getNonNullObject(userStorage, friendId);
-        log.debug(Optional.of(getWithSetFriendsKeeper(user))
-                .filter(f -> f.remove(friendId))
+        log.debug(Optional.of(getFriendsKeeper(user))
+                .filter(friends -> friends.remove(friendId))
                 .isPresent()
-                        ? String.format("Пользователь #%s удален из друзей у #%s", friendId, userId)
-                        : String.format("Пользователя #%s не было в друзьях у #%s", friendId, userId));
+                        ? String.format("%s #%s удален из друзей у #%s", entityTypeName,  friendId, userId)
+                        : String.format("%s #%s не было в друзьях у #%s", entityTypeName,  friendId, userId));
         return friend;
     }
 
@@ -55,24 +59,25 @@ public class UserService extends AbstractService<User> {
                 : user.getFriends().stream()
                         .map(this::findById)
                         .collect(Collectors.toList());
-        log.debug("Найдено {} друзей у пользователей #{}", result.size(), userId);
+        log.debug("Найдено {} друзей у {} #{}", result.size(), entityTypeName, userId);
         return result;
     }
 
-    public List<User> findMutualFriends(Long userId, Long friendId) {
+    public List<User> findMutualFriends(Long userId, Long otherId) {
         User user = getNonNullObject(userStorage, userId);
-        User friend = getNonNullObject(userStorage, friendId);
-        List<User> result = isAnyNull(user.getFriends(), friend.getFriends())
+        User otherUser = getNonNullObject(userStorage, otherId);
+        List<User> result = isAnyNull(user.getFriends(), otherUser.getFriends())
                 ? List.of()
                 : user.getFriends().stream()
-                        .filter(friend.getFriends()::contains)
+                        .filter(otherUser.getFriends()::contains)
                         .map(this::findById)
                         .collect(Collectors.toList());
-        log.debug("Найдено {} общих друзей у пользователей #{} и #{}", result.size(), userId, friendId);
+        log.debug("Найдено {} общих друзей у {} #{} и #{}", result.size(), entityTypeName,  userId, otherId);
         return result;
     }
 
-    private Set<Long> getWithSetFriendsKeeper(@NonNull User user) {
+    @NonNull
+    private Set<Long> getFriendsKeeper(@NonNull User user) {
         return Optional.ofNullable(user.getFriends()).orElseGet(() -> {
                     Set<Long> friends = new HashSet<>();
                     user.setFriends(friends);

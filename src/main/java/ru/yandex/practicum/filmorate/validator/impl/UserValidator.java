@@ -1,12 +1,11 @@
 package ru.yandex.practicum.filmorate.validator.impl;
 
 import lombok.NonNull;
-import ru.yandex.practicum.filmorate.exception.ValidateDateException;
-import ru.yandex.practicum.filmorate.exception.ValidateEmailException;
-import ru.yandex.practicum.filmorate.exception.ValidateException;
-import ru.yandex.practicum.filmorate.exception.ValidateLoginException;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validator.AbsractValidator;
+import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateDateException;
+import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateEmailException;
+import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateException;
+import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateLoginException;
+import ru.yandex.practicum.filmorate.model.impl.User;
 
 import java.time.LocalDate;
 

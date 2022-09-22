@@ -1,7 +1,8 @@
-package ru.yandex.practicum.filmorate.validator;
+package ru.yandex.practicum.filmorate.validator.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateException;
+import ru.yandex.practicum.filmorate.validator.Validator;
 
 @Slf4j
 public abstract class AbsractValidator<T> implements Validator<T> {
