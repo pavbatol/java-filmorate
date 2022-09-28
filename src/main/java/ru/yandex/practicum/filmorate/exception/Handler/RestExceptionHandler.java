@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.exception.Handler;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
 import lombok.NonNull;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,19 +16,18 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import ru.yandex.practicum.filmorate.exception.AlreadyExistsException;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
-import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -41,6 +37,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleNotFoundEx(RuntimeException ex, WebRequest request) {
         String message = "Объект не найден";
         return getResponseEntity(message, ex, NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    protected ResponseEntity<Object> handleAlreadyExistsEx(RuntimeException ex, WebRequest request) {
+        String message = "Уже существует";
+        return getResponseEntity(message, ex, CONFLICT, request);
+    }
+
+    @ExceptionHandler({IncorrectParameterException.class, IllegalArgumentException.class})
+    protected ResponseEntity<Object> handleIncorrectParameterEx(RuntimeException ex, WebRequest request) {
+        String message = "Недопустимое значение параметра";
+        return getResponseEntity(message, ex, BAD_REQUEST, request);
     }
 
     @ExceptionHandler({ValidateException.class, ConstraintViolationException.class})
@@ -79,17 +87,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return getResponseEntity(message, ex, status, request);
     }
 
+    @ExceptionHandler
+    protected ResponseEntity<Object> handleThrowableEx(Throwable ex, WebRequest request) {
+        String message = "Непредвиденная ошибка";
+        return getResponseEntity(message, ex, INTERNAL_SERVER_ERROR, request);
+    }
+
     private ResponseEntity<Object> getResponseEntity(String message,
-                                                     Exception ex,
+                                                     Throwable ex,
                                                      HttpStatus status,
                                                      WebRequest request) {
 
         log.error(message + ": {}", ex.getMessage(), ex);
-        Body body =  getNewBody(message, status, request, ex);
-        return new ResponseEntity<>(body, status);
+        ErrorResponse errorResponse =  getNewBody(message, status, request, ex);
+        return new ResponseEntity<>(errorResponse, status);
     }
 
-    private Body getNewBody(String message, HttpStatus status, WebRequest request, Exception ex) {
+    private ErrorResponse getNewBody(String message, HttpStatus status, WebRequest request, Throwable ex) {
         List<String> reasons;
         if (ex instanceof BindException) {
             reasons = ((BindException) ex)
@@ -100,7 +114,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         } else {
             reasons = Arrays.stream(ex.getMessage().split(", ")).collect(Collectors.toList());
         }
-        return Body.builder()
+        return ErrorResponse.builder()
                 .status(status.value())
                 .endPoint(getRequestURI(request))
                 .detailMessage(message)
@@ -125,19 +139,3 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         }
     }
 }
-
-@Value
-@Builder
-class Body {
-    OffsetDateTime timestamp = OffsetDateTime.now();
-    int status;
-    String endPoint;
-    @JsonInclude(NON_NULL)
-    String detailMessage;
-    String error;
-    List<String> reasons;
-}
-
-
-
-

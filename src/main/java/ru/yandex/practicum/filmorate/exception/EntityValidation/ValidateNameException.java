@@ -1,12 +1,12 @@
-package ru.yandex.practicum.filmorate.exception;
+package ru.yandex.practicum.filmorate.exception.EntityValidation;
 
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @ResponseStatus(BAD_REQUEST)
-public class ValidateLoginException extends ValidateException{
-    public ValidateLoginException(String message) {
+public class ValidateNameException extends ValidateException {
+    public ValidateNameException(String message) {
         super(message);
     }
 }
