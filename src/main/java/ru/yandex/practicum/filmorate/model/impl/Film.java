@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model.impl;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.experimental.SuperBuilder;
+import ru.yandex.practicum.filmorate.model.directory.Genre;
 import ru.yandex.practicum.filmorate.validator.annotationed.FromToNow;
 
 import javax.validation.constraints.NotBlank;
@@ -37,4 +38,12 @@ public class Film extends AbstractEntity{
     @NonFinal
     @Setter
     Set<Long> likes;
+
+    @NonFinal
+    @Setter
+    Set<Genre> genres;
+
+    @NonFinal
+    @Setter
+    Integer mpa_rating;
 }
