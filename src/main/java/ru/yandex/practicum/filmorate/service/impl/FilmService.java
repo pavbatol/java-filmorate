@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service.impl;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.impl.Film;
@@ -24,11 +25,12 @@ import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.vali
 @Validated
 public class FilmService extends AbstractService<Film> {
 
-    FilmStorage filmStorage;
-    UserStorage userStorage;
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage storage, UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage,
+                       @Qualifier("userDbStorage") UserStorage userStorage) {
         super(storage);
         this.filmStorage = storage;
         this.userStorage = userStorage;

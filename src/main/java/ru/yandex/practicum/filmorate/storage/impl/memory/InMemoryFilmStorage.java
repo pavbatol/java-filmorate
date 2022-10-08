@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 @Slf4j
-@Component
+@Component("inMemoryFilmStorage")
 @RequiredArgsConstructor
 public class InMemoryFilmStorage
         extends AbstractInMemoryStorage<Film>

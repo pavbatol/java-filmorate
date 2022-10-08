@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.directory;
+package ru.yandex.practicum.filmorate.model.dictionary;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
