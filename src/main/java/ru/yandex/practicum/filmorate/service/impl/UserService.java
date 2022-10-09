@@ -39,6 +39,7 @@ public class UserService extends AbstractService<User> {
                         ? String.format("%s #%s добавлен в друзья к #%s", entityTypeName,  friendId, userId)
                         : String.format("%s #%s уже в друзьях у #%s", entityTypeName,  friendId, userId));
         getFriendsKeeper(friend).add(userId);
+        userStorage.update(user);
         return friend;
     }
 
@@ -50,6 +51,7 @@ public class UserService extends AbstractService<User> {
                 .isPresent()
                         ? String.format("%s #%s удален из друзей у #%s", entityTypeName,  friendId, userId)
                         : String.format("%s #%s не было в друзьях у #%s", entityTypeName,  friendId, userId));
+        userStorage.update(user);
         return friend;
     }
 

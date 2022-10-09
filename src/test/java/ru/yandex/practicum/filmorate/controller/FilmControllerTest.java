@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.yandex.practicum.filmorate.model.impl.MpaRating;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.MockMvcTest;
 
@@ -123,6 +124,9 @@ class FilmControllerTest {
                 .releaseDate(VALID_DATE)
                 .duration(VALID_DURATION)
                 .likes(VALID_LIKES)
+                .genres(null)
+                .mpa(new MpaRating(1, "G", "testName"))
+                .rate(0)
                 .build();
     }
 }

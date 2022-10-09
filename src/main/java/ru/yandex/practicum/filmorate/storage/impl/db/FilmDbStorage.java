@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.impl.dbase;
+package ru.yandex.practicum.filmorate.storage.impl.db;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -7,15 +7,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.dictionary.Genre;
-import ru.yandex.practicum.filmorate.model.dictionary.MpaRating;
+import ru.yandex.practicum.filmorate.model.impl.Genre;
+import ru.yandex.practicum.filmorate.model.impl.MpaRating;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
 
@@ -38,7 +37,6 @@ public class FilmDbStorage implements FilmStorage {
         values.put("duration", film.getDuration());
         values.put("rating_id", film.getMpa().getId());
         film.setId(simpleJdbcInsert.executeAndReturnKey(values).longValue());
-        updateFilmLikes(film);
         updateFilmGenres(film);
         return findById(film.getId()).orElse(film);
     }
@@ -67,12 +65,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film remove(Long id) {
-        throw new UnsupportedOperationException("Удаление не поддерживается");
-        /*
         Film film = getNonNullObject(this, id);
         final String sql = "delete from films where film_id = ?";
         return jdbcTemplate.update(sql, id) > 0 ? film : null;
-         */
     }
 
     @Override
@@ -90,17 +85,7 @@ public class FilmDbStorage implements FilmStorage {
                 + "from mpa_ratings) r on f.rating_id = ri "
                 + "where f.film_id = ?";
         List<Film> query = jdbcTemplate.query(sql, this::mapRowToFilm, id);
-        return query.size() > 0 ? Optional.of(query.get(0)) : Optional.empty();
-    }
-
-    @Override
-    public boolean contains(Long id) {
-        try {
-            getNonNullObject(this, id);
-            return true;
-        } catch (NotFoundException e) {
-            return false;
-        }
+        return query.size() > 0 ? Optional.ofNullable(query.get(0)) : Optional.empty();
     }
 
     private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
@@ -123,15 +108,13 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "select * from film_genres fg "
                 + "left join genres g on fg.genre_id = g.genre_id "
                 + "where fg.film_id = ?";
-        return jdbcTemplate.queryForStream(sql, (rs, rowNum) -> new Genre(rs.getInt("genre_id"), rs.getString("name")), filmId)
-                .collect(Collectors.toSet());
-
+        return new HashSet<>(jdbcTemplate.query(sql, (rs, rowNum) ->
+                new Genre(rs.getInt("genre_id"), rs.getString("name")), filmId));
     }
 
     private Set<Long> getLikesByFilmId(long filmId) {
         String sql = "select user_id from film_likes where film_id = ?";
-        return jdbcTemplate.queryForStream(sql, (rs, rowNum) -> rs.getLong("user_id"), filmId)
-                .collect(Collectors.toSet());
+        return new HashSet<>(jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("user_id"), filmId));
     }
 
     private void updateFilmLikes(@NonNull Film film) {
