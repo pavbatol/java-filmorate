@@ -11,13 +11,13 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-@EqualsAndHashCode(exclude = {"rating", "description"})
+@EqualsAndHashCode(exclude = {"name", "description"})
 public class MpaRating implements Entity {
 
     private long id;
 
     @Size(max = 10)
-    private String rating;
+    private String name;
 
     @Size(max = 150)
     private String description;

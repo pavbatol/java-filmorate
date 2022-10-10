@@ -120,13 +120,12 @@ public class FilmDbStorage implements FilmStorage {
     private void updateFilmLikes(@NonNull Film film) {
         String deleteSql = "delete from film_likes where film_id = ?";
         String insertSql = "insert into film_likes (film_id, user_id) values(?, ?)";
-        String updateSql = "update film set rate = ? where id = ?";
+        String updateSql = "update films set rate = ? where film_id = ?";
         jdbcTemplate.update(deleteSql, film.getId());
         Optional.ofNullable(film.getLikes()).ifPresent(likes -> {
                     likes.forEach(userId -> jdbcTemplate.update(insertSql, film.getId(), userId));
                     jdbcTemplate.update(updateSql, film.getRate(), film.getId());
-                }
-        );
+                });
     }
 
     private void updateFilmGenres(@NonNull Film film) {
@@ -135,7 +134,6 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(deleteSql, film.getId());
         Optional.ofNullable(film.getGenres()).ifPresent(genres -> genres.stream()
                 .map(Genre::getId)
-                .forEach(genreId -> jdbcTemplate.update(insertSql, film.getId(), genreId))
-        );
+                .forEach(genreId -> jdbcTemplate.update(insertSql, film.getId(), genreId)));
     }
 }

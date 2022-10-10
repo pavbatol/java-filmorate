@@ -29,7 +29,7 @@ public class MpaRatingDBStorage implements MpaRatingStorage {
                 .withTableName("mpa_ratings")
                 .usingGeneratedKeyColumns("rating_id");
         Map<String, Object> values = new HashMap<>();
-        values.put("rating", mpaRating.getRating());
+        values.put("rating", mpaRating.getName());
         values.put("description", mpaRating.getDescription());
         mpaRating.setId(simpleJdbcInsert.executeAndReturnKey(values).intValue());
         return mpaRating;
@@ -44,7 +44,7 @@ public class MpaRatingDBStorage implements MpaRatingStorage {
         }
         String sql = "update mpa_ratings set rating = ?, description = ? where rating_id = ?";
         jdbcTemplate.update(sql,
-                mpaRating.getRating(),
+                mpaRating.getName(),
                 mpaRating.getDescription(),
                 mpaRating.getId());
         return mpaRating;

@@ -49,6 +49,7 @@ public class FilmService extends AbstractService<Film> {
                 .isPresent()
                         ? String.format("%s #%s получил лайк от пользователя #%s", entityTypeName, filmId, userId)
                         : String.format("%s #%s уже имеет лайк от пользователя #%s", entityTypeName, filmId, userId));
+        filmStorage.update(film);
         return film;
     }
 
@@ -60,6 +61,7 @@ public class FilmService extends AbstractService<Film> {
                 .isPresent()
                         ? String.format("%s #%s потерял лайк от пользователя #%s", entityTypeName, filmId, userId)
                         : String.format("%s #%s не имел лайк от пользователя #%s", entityTypeName, filmId, userId));
+        filmStorage.update(film);
         return film;
     }
 
