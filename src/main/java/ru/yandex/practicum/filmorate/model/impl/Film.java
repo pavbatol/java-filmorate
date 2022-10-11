@@ -48,22 +48,4 @@ public class Film extends AbstractEntity{
     @NonFinal
     @Setter
     int rate;
-
-//    public void addLike(long userId) {
-//        likes.add(userId);
-//        rate++;
-//    }
-//    public void removeLike(long userId) {
-//        likes.remove(userId);
-//        rate--;
-//    }
-//
-//    public void addGenre(Genre genre) {
-//        genres.add(genre);
-//    }
-//
-//    public void removeGenre(Genre genre) {
-//        genres.remove(genre);
-//    }
-
 }

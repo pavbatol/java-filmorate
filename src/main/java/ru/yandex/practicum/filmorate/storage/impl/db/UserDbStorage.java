@@ -19,6 +19,7 @@ import java.util.*;
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final String entityTypeName = "Пользователь";
 
     @Override
     public User add(User user) {
@@ -63,8 +64,31 @@ public class UserDbStorage implements UserStorage {
     public Optional<User> findById(Long id) {
         String sql = "select * from users where user_id = ?";
         List<User> query = jdbcTemplate.query(sql, this::mapRowToUser, id);
-        return query.size() > 0 ? Optional.ofNullable(query.get(0)) : Optional.empty();
+        return query.stream().findFirst();
+    }
 
+    @Override
+    public List<User> findFriends(Long userId) {
+        String sql = "select * from users where user_id "
+        + "in (select friend_id from friends where user_id = ? and confirmed is true)";
+        return new ArrayList<>( jdbcTemplate.query(sql, this::mapRowToUser, userId));
+    }
+
+    @Override
+    public List<User> findMutualFriends(Long userId, Long otherId) {
+        String sql = "select * from users u "
+                + "join ( "
+                + "   select f.fr_id "
+                + "   from ( "
+                + "       select friend_id as fr_id "
+                + "       from friends "
+                + "       where user_id = ? and confirmed is true) f "
+                + "   join ( "
+                + "       select friend_id as fr_id "
+                + "       from friends "
+                + "       where user_id = ? and confirmed is true ) t on t.fr_id = f.fr_id "
+                + ") mutual on u.user_id = mutual.fr_id";
+        return new ArrayList<>( jdbcTemplate.query(sql, this::mapRowToUser, userId, otherId));
     }
 
     private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
@@ -74,11 +98,11 @@ public class UserDbStorage implements UserStorage {
                 .login(rs.getString("login"))
                 .name(rs.getString("name"))
                 .birthday(rs.getDate("birthday").toLocalDate())
-                .friends(getFriends(rs.getLong("user_id")))
+                .friends(getFriendIds(rs.getLong("user_id")))
                 .build();
     }
 
-    private Set<Long> getFriends(long userId) {
+    private Set<Long> getFriendIds(long userId) {
         String sql = "select friend_id from friends where user_id = ? and confirmed is true";
         return new HashSet<>( jdbcTemplate.query(sql,
                 (rs, rowNum) -> rs.getLong("friend_id"), userId));

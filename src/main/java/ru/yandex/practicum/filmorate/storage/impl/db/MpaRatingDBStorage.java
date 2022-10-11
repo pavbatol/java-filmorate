@@ -60,7 +60,7 @@ public class MpaRatingDBStorage implements MpaRatingStorage {
     public Optional<MpaRating> findById(Long id) {
         String sql = "select * from mpa_ratings where rating_id = ?";
         List<MpaRating> query = jdbcTemplate.query(sql, this::mapRowToMpaRating, id);
-        return query.size() > 0 ? Optional.ofNullable(query.get(0)) : Optional.empty();
+        return query.stream().findFirst();
     }
 
     MpaRating mapRowToMpaRating(ResultSet rs, int rowNum) throws SQLException {

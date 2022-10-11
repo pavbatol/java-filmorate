@@ -58,7 +58,7 @@ public class GenreDBStorage  implements GenreStorage {
     public Optional<Genre> findById(Long id) {
         String sql = "select * from genres where genre_id = ?";
         List<Genre> query = jdbcTemplate.query(sql, this::mapRowToGenre, id);
-        return query.size() > 0 ? Optional.ofNullable(query.get(0)) : Optional.empty();
+        return query.stream().findFirst();
     }
 
     Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {

@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateId;
@@ -43,35 +42,32 @@ public class FilmService extends AbstractService<Film> {
 
     public Film addLike(Long filmId, Long userId) {
         validateId(userStorage, userId);
-        Film film = getNonNullObject(filmStorage, filmId);
-        log.debug(Optional.of(getLikesKeeper(film))
-                .filter(likes -> likes.add(userId))
-                .isPresent()
-                        ? String.format("%s #%s получил лайк от пользователя #%s", entityTypeName, filmId, userId)
-                        : String.format("%s #%s уже имеет лайк от пользователя #%s", entityTypeName, filmId, userId));
-        filmStorage.update(film);
+        Film film = getNonNullObject(filmStorage,filmId);
+        if (getLikesKeeper(film).add(userId)) {
+            film.setRate(film.getRate() + 1);
+            update(film);
+            log.debug(String.format("%s #%s получил лайк от пользователя #%s", entityTypeName, filmId, userId));
+        } else {
+            log.debug(String.format("%s #%s уже имеет лайк от пользователя #%s", entityTypeName, filmId, userId));
+        }
         return film;
     }
 
     public Film removeLike(Long filmId, Long userId) {
         validateId(userStorage, userId);
         Film film = getNonNullObject(filmStorage, filmId);
-        log.debug(Optional.of(getLikesKeeper(film))
-                .filter(likes -> likes.remove(userId))
-                .isPresent()
-                        ? String.format("%s #%s потерял лайк от пользователя #%s", entityTypeName, filmId, userId)
-                        : String.format("%s #%s не имел лайк от пользователя #%s", entityTypeName, filmId, userId));
-        filmStorage.update(film);
+        if (getLikesKeeper(film).remove(userId)) {
+            film.setRate(film.getRate() - 1);
+            update(film);
+            log.debug(String.format("%s #%s потерял лайк от пользователя #%s", entityTypeName, filmId, userId));
+        } else {
+            log.debug(String.format("%s #%s не имел лайк от пользователя #%s", entityTypeName, filmId, userId));
+        }
         return film;
     }
 
     public List<Film> findPopularFilms(@Positive int count) {
-        List<Film> result = filmStorage.findAll().stream()
-                .sorted(this::filmCompare)
-                .limit(count)
-                .collect(Collectors.toList());
-        log.debug("Найдено {} для {} из запрошенных {} с наибольшим количеством лайков",
-                result.size(), entityTypeName, count);
+        List<Film> result = filmStorage.findPopularFilms(count);
         return result;
     }
 
@@ -81,11 +77,5 @@ public class FilmService extends AbstractService<Film> {
             Set<Long> likes = new HashSet<>();
             film.setLikes(likes);
             return film.getLikes();});
-    }
-
-    public int filmCompare(@NonNull Film f1, @NonNull Film f2) {
-        int likes1 = f1.getLikes() == null ? 0 : f1.getLikes().size();
-        int likes2 = f2.getLikes() == null ? 0 : f2.getLikes().size();
-        return likes2 - likes1;
     }
 }
