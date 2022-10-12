@@ -27,21 +27,18 @@ from users
 ```
 #### Пример запроса - список общих друзей с другим пользователем
 ```SQL
---Имея id двух пользователей: me_id и other_id
+--Имея id двух пользователей: userId и otherId
 
-SELECT u.user_id, u.name
-FROM user u
+SELECT * FROM users u
 JOIN (
-    SELECT f.fr_Id 
-    FROM (
-        SELECT friend_id AS fr_Id
-        FROM friends  
-        WHERE me_id = user_id AND confirmed IS TRUE
-    ) f
-    JOIN (
-        SELECT friend_id AS fr_Id
-        FROM friends  
-        WHERE other_id = user_id AND confirmed IS TRUE
-    ) t ON t.fr_Id = f.fr_Id
-) mutual ON u.user_id = mutual.fr_Id 
+	SELECT f.fr_id
+	FROM (
+		SELECT friend_id AS fr_id
+		FROM friends
+		WHERE user_id = userId AND confirmed IS TRUE) f
+	JOIN (
+		SELECT friend_id AS fr_id
+		FROM friends
+		WHERE user_id = otherId AND confirmed IS TRUE ) t ON t.fr_id = f.fr_id 
+) mutual ON u.user_id = mutual.fr_id
 ```
