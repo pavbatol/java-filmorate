@@ -1,45 +1,20 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.controller.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.service.impl.FilmService;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
-
-import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateEntity;
 
 @Validated
 @RestController
 @RequestMapping("/films")
-@RequiredArgsConstructor
-public class FilmController {
+public class FilmController extends AbstractController<Film, FilmService> {
 
-    private final FilmService service;
-
-    @PostMapping
-    public Film add(@Valid @RequestBody Film film) {
-        validateEntity(film);
-        return service.add(film);
-    }
-
-    @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-        validateEntity(film);
-        return service.update(film);
-    }
-
-    @GetMapping
-    public List<Film> findAll() {
-        return service.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Film findById(@PathVariable(value = "id") Long id) {
-        return service.findById(id);
+    public FilmController(FilmService service) {
+        super(service);
     }
 
     @PutMapping("/{id}/like/{userId}")

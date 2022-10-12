@@ -1,47 +1,19 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.controller.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.impl.User;
 import ru.yandex.practicum.filmorate.service.impl.UserService;
 
-import javax.validation.Valid;
 import java.util.List;
-
-import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.editUserName;
-import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateEntity;
 
 @Validated
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor
-public class UserController {
+public class UserController extends AbstractController<User, UserService> {
 
-    private final UserService service;
-
-    @PostMapping
-    public User add(@Valid @RequestBody User user) {
-        validateEntity(user);
-        editUserName(user);
-        return service.add(user);
-    }
-
-    @PutMapping
-    public User update(@Valid @RequestBody User user) {
-        validateEntity(user);
-        editUserName(user);
-        return service.update(user);
-    }
-
-    @GetMapping
-    public List<User> findAll() {
-        return service.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public User findById(@PathVariable(value = "id") Long id) {
-        return service.findById(id);
+    public UserController(UserService service) {
+        super(service);
     }
 
     @PutMapping("/{id}/friends/{friendId}")

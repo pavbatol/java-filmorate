@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.impl.User;
 
 import java.time.LocalDate;
 
-public class UserValidator<T> extends AbsractValidator<User> {
+public class UserValidator extends AbstractValidator<User> {
     @Override
     public void validate(User user) throws ValidateException {
         if (user == null) {
@@ -27,6 +27,7 @@ public class UserValidator<T> extends AbsractValidator<User> {
                 || user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidateDateException("Дата рождения не может быть в будущем");
         }
+        editName(user);
     }
 
     public static void editName(@NonNull User user) {

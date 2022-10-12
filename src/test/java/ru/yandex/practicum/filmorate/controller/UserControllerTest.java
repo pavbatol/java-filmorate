@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.yandex.practicum.filmorate.controller.impl.UserController;
 import ru.yandex.practicum.filmorate.model.impl.User;
 import ru.yandex.practicum.filmorate.MockMvcTest;
 

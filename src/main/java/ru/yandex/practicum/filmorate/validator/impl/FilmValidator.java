@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 import static java.time.Month.DECEMBER;
 
-public class FilmValidator<T> extends AbsractValidator<Film> {
+public class FilmValidator extends AbstractValidator<Film> {
     @Override
     public void validate(Film film) throws ValidateException {
         if (film == null) {
