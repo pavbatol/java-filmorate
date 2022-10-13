@@ -70,7 +70,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public List<User> findFriends(Long userId) {
         String sql = "select * from users where user_id "
-        + "in (select friend_id from friends where user_id = ? and confirmed is true)";
+        + "in (select friend_id from friends where user_id = ?)";
         return new ArrayList<>( jdbcTemplate.query(sql, this::mapRowToUser, userId));
     }
 
@@ -82,11 +82,11 @@ public class UserDbStorage implements UserStorage {
                 + "   from ( "
                 + "       select friend_id as fr_id "
                 + "       from friends "
-                + "       where user_id = ? and confirmed is true) f "
+                + "       where user_id = ?) f "
                 + "   join ( "
                 + "       select friend_id as fr_id "
                 + "       from friends "
-                + "       where user_id = ? and confirmed is true ) t on t.fr_id = f.fr_id "
+                + "       where user_id = ?) t on t.fr_id = f.fr_id "
                 + ") mutual on u.user_id = mutual.fr_id";
         return new ArrayList<>( jdbcTemplate.query(sql, this::mapRowToUser, userId, otherId));
     }
@@ -103,18 +103,18 @@ public class UserDbStorage implements UserStorage {
     }
 
     private Set<Long> getFriendIds(long userId) {
-        String sql = "select friend_id from friends where user_id = ? and confirmed is true";
+        String sql = "select friend_id from friends where user_id = ?";
         return new HashSet<>( jdbcTemplate.query(sql,
                 (rs, rowNum) -> rs.getLong("friend_id"), userId));
     }
 
     private void updateFriends(User user) {
         String deleteSql = "delete from friends where user_id = ?";
-        String insertSql = "insert into friends (user_id, friend_id, confirmed) values(?, ?, ?)";
+        String insertSql = "insert into friends (user_id, friend_id) values(?, ?)";
         jdbcTemplate.update(deleteSql, user.getId());
         if (Objects.nonNull(user.getFriends())) {
             user.getFriends().forEach(friendId ->
-                    jdbcTemplate.update(insertSql, user.getId(),  friendId, "true"));
+                    jdbcTemplate.update(insertSql, user.getId(),  friendId));
         }
     }
 }

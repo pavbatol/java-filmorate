@@ -44,7 +44,6 @@ CREATE TABLE IF NOT EXISTS film_likes (
 CREATE TABLE IF NOT EXISTS friends (
   user_id bigint,
   friend_id bigint,
-  confirmed boolean DEFAULT FALSE,
   PRIMARY KEY (user_id, friend_id)
 );
 

@@ -35,10 +35,10 @@ JOIN (
 	FROM (
 		SELECT friend_id AS fr_id
 		FROM friends
-		WHERE user_id = userId AND confirmed IS TRUE) f
+		WHERE user_id = userId) f
 	JOIN (
 		SELECT friend_id AS fr_id
 		FROM friends
-		WHERE user_id = otherId AND confirmed IS TRUE ) t ON t.fr_id = f.fr_id 
+		WHERE user_id = otherId) t ON t.fr_id = f.fr_id 
 ) mutual ON u.user_id = mutual.fr_id
 ```
