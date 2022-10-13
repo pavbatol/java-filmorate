@@ -45,9 +45,9 @@ public class UserDbStorage implements UserStorage {
             log.error(message);
             throw new NotFoundException(message);
         }
-        String sql = "update users set  email = ?, login = ?, name = ?, birthday = ?"
-                + "where user_id = ?";
-        jdbcTemplate.update(sql,
+//        String sql = "update users set  email = ?, login = ?, name = ?, birthday = ?"
+//                + "where user_id = ?";
+        jdbcTemplate.update(UPDATE_USER_SQL,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
@@ -60,10 +60,10 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User remove(Long id) throws NotFoundException {
         User user = getNonNullObject(this, id);
-        final String deleteUserSql = "delete from users where user_id = ?";
-        final String deleteFriendsSql = "delete from friends where user_id = ? or friend_id = ?";
-        if (jdbcTemplate.update(deleteFriendsSql, id, id) > 0
-                && jdbcTemplate.update(deleteUserSql, id) > 0) {
+//        final String deleteUserSql = "delete from users where user_id = ?";
+//        final String deleteFriendsSql = "delete from friends where user_id = ? or friend_id = ?";
+        if (jdbcTemplate.update(DELETE_USER_FRIENDS_SQL, id) > 0
+                && jdbcTemplate.update(DELETE_USER_SQL, id) > 0) {
             return user;
         }
         return null;
@@ -71,39 +71,39 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findAll() {
-        String sql = "select * from users";
-        return jdbcTemplate.query(sql, this::mapRowToUser);
+//        String sql = "select * from users";
+        return jdbcTemplate.query(FIND_ALL_USERS_SQL, this::mapRowToUser);
     }
 
     @Override
     public Optional<User> findById(Long id) {
-        String sql = "select * from users where user_id = ?";
-        List<User> query = jdbcTemplate.query(sql, this::mapRowToUser, id);
+//        String sql = "select * from users where user_id = ?";
+        List<User> query = jdbcTemplate.query(FIND_USER_BY_ID_SQL, this::mapRowToUser, id);
         return query.stream().findFirst();
     }
 
     @Override
     public List<User> findFriends(Long userId) {
-        String sql = "select * from users where user_id "
-        + "in (select friend_id from friends where user_id = ?)";
-        return new ArrayList<>( jdbcTemplate.query(sql, this::mapRowToUser, userId));
+//        String sql = "select * from users where user_id "
+//        + "in (select friend_id from friends where user_id = ?)";
+        return new ArrayList<>( jdbcTemplate.query(FIND_FRIENDS_BY_USER_ID_SQL, this::mapRowToUser, userId));
     }
 
     @Override
     public List<User> findMutualFriends(Long userId, Long otherId) {
-        String sql = "select * from users u "
-                + "join ( "
-                + "   select f.fr_id "
-                + "   from ( "
-                + "       select friend_id as fr_id "
-                + "       from friends "
-                + "       where user_id = ?) f "
-                + "   join ( "
-                + "       select friend_id as fr_id "
-                + "       from friends "
-                + "       where user_id = ?) t on t.fr_id = f.fr_id "
-                + ") mutual on u.user_id = mutual.fr_id";
-        return new ArrayList<>( jdbcTemplate.query(sql, this::mapRowToUser, userId, otherId));
+//        String sql = "select * from users u "
+//                + "join ( "
+//                + "   select f.fr_id "
+//                + "   from ( "
+//                + "       select friend_id as fr_id "
+//                + "       from friends "
+//                + "       where user_id = ?) f "
+//                + "   join ( "
+//                + "       select friend_id as fr_id "
+//                + "       from friends "
+//                + "       where user_id = ?) t on t.fr_id = f.fr_id "
+//                + ") mutual on u.user_id = mutual.fr_id";
+        return new ArrayList<>( jdbcTemplate.query(find_Mutual_Friends_SQL, this::mapRowToUser, userId, otherId));
     }
 
     private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
@@ -118,18 +118,18 @@ public class UserDbStorage implements UserStorage {
     }
 
     private Set<Long> getFriendIds(long userId) {
-        String sql = "select friend_id from friends where user_id = ?";
-        return new HashSet<>( jdbcTemplate.query(sql,
+//        String sql = "select friend_id from friends where user_id = ?";
+        return new HashSet<>( jdbcTemplate.query(GET_FRIEND_IDS_BY_USER_ID_SQL,
                 (rs, rowNum) -> rs.getLong("friend_id"), userId));
     }
 
     private void updateFriends(@NonNull User user) {
-        String deleteFriendsSql = "delete from friends where user_id = ?";
-        String insertFriendsSql = "insert into friends (user_id, friend_id) values(?, ?)";
-        jdbcTemplate.update(deleteFriendsSql, user.getId());
+//        String deleteFriendsSql = "delete from friends where user_id = ?";
+//        String insertFriendsSql = "insert into friends (user_id, friend_id) values(?, ?)";
+        jdbcTemplate.update(DELETE_USER_FRIENDS_SQL, user.getId());
         if (Objects.nonNull(user.getFriends())) {
             user.getFriends().forEach(friendId ->
-                    jdbcTemplate.update(insertFriendsSql, user.getId(),  friendId));
+                    jdbcTemplate.update(INSERT_USER_FRIENDS_SQL, user.getId(),  friendId));
         }
     }
 }

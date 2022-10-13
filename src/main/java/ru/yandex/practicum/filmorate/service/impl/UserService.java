@@ -39,7 +39,7 @@ public class UserService extends AbstractService<User> {
         } else {
             log.debug(String.format("%s #%s уже в друзьях у #%s", entityTypeName,  friendId, userId));
         }
-        return friend;
+        return user;
     }
 
     public User removeFriend(Long userId, Long friendId) {
@@ -51,7 +51,7 @@ public class UserService extends AbstractService<User> {
         } else {
             log.debug(String.format("%s #%s не было в друзьях у #%s", entityTypeName,  friendId, userId));
         }
-        return friend;
+        return user;
     }
 
     public List<User> findFriends(Long userId) {

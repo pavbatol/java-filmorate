@@ -42,8 +42,8 @@ public class MpaRatingDBStorage implements MpaRatingStorage {
             log.error(message);
             throw new NotFoundException(message);
         }
-        String sql = "update mpa_ratings set rating = ?, description = ? where rating_id = ?";
-        jdbcTemplate.update(sql,
+//        String sql = "update mpa_ratings set rating = ?, description = ? where rating_id = ?";
+        jdbcTemplate.update(UPDATE_MPARATING_SQL,
                 mpaRating.getName(),
                 mpaRating.getDescription(),
                 mpaRating.getId());
@@ -52,14 +52,14 @@ public class MpaRatingDBStorage implements MpaRatingStorage {
 
     @Override
     public List<MpaRating> findAll() {
-        String sql = "select * from mpa_ratings";
-        return jdbcTemplate.query(sql, this::mapRowToMpaRating);
+//        String sql = "select * from mpa_ratings";
+        return jdbcTemplate.query(FIND_ALL_MPARATINGS_SQL, this::mapRowToMpaRating);
     }
 
     @Override
     public Optional<MpaRating> findById(Long id) {
-        String sql = "select * from mpa_ratings where rating_id = ?";
-        List<MpaRating> query = jdbcTemplate.query(sql, this::mapRowToMpaRating, id);
+//        String sql = "select * from mpa_ratings where rating_id = ?";
+        List<MpaRating> query = jdbcTemplate.query(FIND_MPARATING_BY_ID_SQL, this::mapRowToMpaRating, id);
         return query.stream().findFirst();
     }
 
