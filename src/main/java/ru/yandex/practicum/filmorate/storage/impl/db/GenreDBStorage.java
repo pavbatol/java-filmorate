@@ -61,7 +61,7 @@ public class GenreDBStorage  implements GenreStorage {
         return query.stream().findFirst();
     }
 
-    Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {
+    private Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {
         return new Genre(rs.getLong("genre_id"), rs.getString("name"));
     }
 }

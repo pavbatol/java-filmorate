@@ -63,10 +63,9 @@ public class MpaRatingDBStorage implements MpaRatingStorage {
         return query.stream().findFirst();
     }
 
-    MpaRating mapRowToMpaRating(ResultSet rs, int rowNum) throws SQLException {
+    private MpaRating mapRowToMpaRating(ResultSet rs, int rowNum) throws SQLException {
         return new MpaRating(rs.getLong("rating_id"),
                 rs.getString("rating"),
-                rs.getString("description")
-        );
+                rs.getString("description"));
     }
 }
