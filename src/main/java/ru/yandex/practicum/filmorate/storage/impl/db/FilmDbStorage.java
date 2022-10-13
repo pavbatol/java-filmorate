@@ -67,10 +67,17 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film remove(Long id) {
+    public Film remove(Long id) throws NotFoundException {
         Film film = getNonNullObject(this, id);
-        final String sql = "delete from films where film_id = ?";
-        return jdbcTemplate.update(sql, id) > 0 ? film : null;
+        final String deleteFilmSql = "delete from films where film_id = ?";
+        final String deleteFilmGenresSql = "delete from film_likes where film_id = ?";
+        final String deleteFilmLikesSql = "delete from film_genres where film_id = ?";
+        if (jdbcTemplate.update(deleteFilmLikesSql, id) > 0
+            && jdbcTemplate.update(deleteFilmGenresSql, id) > 0
+            && jdbcTemplate.update(deleteFilmSql, id) > 0) {
+            return film;
+        }
+        return null;
     }
 
     @Override

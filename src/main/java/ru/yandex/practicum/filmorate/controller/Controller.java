@@ -14,8 +14,8 @@ public interface Controller<T> {
     @PutMapping
     T update(@Valid @RequestBody T t);
 
-    @DeleteMapping
-    default T remove() {
+    @DeleteMapping("/{id}")
+    default T remove(@PathVariable(value = "id") Long id) {
         throw new UnsupportedOperationException("Удаление не поддерживается");
     }
 

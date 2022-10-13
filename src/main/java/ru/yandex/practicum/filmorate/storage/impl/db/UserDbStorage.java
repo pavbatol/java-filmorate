@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl.db;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +13,8 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
 
 @Slf4j
 @Component("userDbStorage")
@@ -52,6 +55,18 @@ public class UserDbStorage implements UserStorage {
                 user.getId());
         updateFriends(user);
         return user;
+    }
+
+    @Override
+    public User remove(Long id) throws NotFoundException {
+        User user = getNonNullObject(this, id);
+        final String deleteUserSql = "delete from users where user_id = ?";
+        final String deleteFriendsSql = "delete from friends where user_id = ? or friend_id = ?";
+        if (jdbcTemplate.update(deleteFriendsSql, id, id) > 0
+                && jdbcTemplate.update(deleteUserSql, id) > 0) {
+            return user;
+        }
+        return null;
     }
 
     @Override
@@ -108,13 +123,13 @@ public class UserDbStorage implements UserStorage {
                 (rs, rowNum) -> rs.getLong("friend_id"), userId));
     }
 
-    private void updateFriends(User user) {
-        String deleteSql = "delete from friends where user_id = ?";
-        String insertSql = "insert into friends (user_id, friend_id) values(?, ?)";
-        jdbcTemplate.update(deleteSql, user.getId());
+    private void updateFriends(@NonNull User user) {
+        String deleteFriendsSql = "delete from friends where user_id = ?";
+        String insertFriendsSql = "insert into friends (user_id, friend_id) values(?, ?)";
+        jdbcTemplate.update(deleteFriendsSql, user.getId());
         if (Objects.nonNull(user.getFriends())) {
             user.getFriends().forEach(friendId ->
-                    jdbcTemplate.update(insertSql, user.getId(),  friendId));
+                    jdbcTemplate.update(insertFriendsSql, user.getId(),  friendId));
         }
     }
 }
