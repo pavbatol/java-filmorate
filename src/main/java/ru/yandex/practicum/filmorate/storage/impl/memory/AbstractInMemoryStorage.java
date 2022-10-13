@@ -69,8 +69,4 @@ public abstract class AbstractInMemoryStorage<T extends Entity> implements Stora
     public boolean contains(Long id) {
         return container.containsKey(id);
     }
-
-    protected void clear() {
-        container.clear();
-    }
 }

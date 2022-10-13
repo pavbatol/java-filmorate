@@ -1,15 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.impl.memory;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.impl.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
@@ -54,6 +52,24 @@ public class InMemoryUserStorage
                         .collect(Collectors.toList());
         log.debug("Найдено {} общих друзей у {} #{} и #{}", result.size(), entityTypeName,  userId, otherId);
         return result;
+    }
+
+    @Override
+    public boolean addFriend(Long userId, Long friendId) {
+        return getFriendsKeeper(getNonNullObject(this, userId)).add(friendId);
+    }
+
+    @Override
+    public boolean removeFriend(Long userId, Long friendId) {
+        return getFriendsKeeper(getNonNullObject(this, userId)).remove(friendId);
+    }
+
+    @NonNull
+    private Set<Long> getFriendsKeeper(@NonNull User user) {
+        return Optional.ofNullable(user.getFriends()).orElseGet(() -> {
+            Set<Long> friends = new HashSet<>();
+            user.setFriends(friends);
+            return user.getFriends();});
     }
 
     private boolean isAnyNull(Object... o) {

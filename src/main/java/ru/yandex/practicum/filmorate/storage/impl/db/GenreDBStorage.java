@@ -41,7 +41,6 @@ public class GenreDBStorage  implements GenreStorage {
             log.error(message);
             throw new NotFoundException(message);
         }
-//        String sql = "update genres set name = ? where genre_id = ?";
         jdbcTemplate.update(UPDATE_GENRE_SQL,
                 genre.getName(),
                 genre.getId());
@@ -50,13 +49,11 @@ public class GenreDBStorage  implements GenreStorage {
 
     @Override
     public List<Genre> findAll() {
-//        String sql = "select * from genres";
         return jdbcTemplate.query(FIND_ALL_GENRES_SQL, this::mapRowToGenre);
     }
 
     @Override
     public Optional<Genre> findById(Long id) {
-//        String sql = "select * from genres where genre_id = ?";
         List<Genre> query = jdbcTemplate.query(FIND_GENRE_BY_ID_SQL, this::mapRowToGenre, id);
         return query.stream().findFirst();
     }

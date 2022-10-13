@@ -31,27 +31,49 @@ public class UserService extends AbstractService<User> {
     }
 
     public User addFriend(Long userId, Long friendId) {
+//        User user = getNonNullObject(userStorage, userId);
+//        validateId(userStorage, friendId);
+//        Set<Long> friends = getFriendsKeeper(user);
+//        if (friends.add(friendId)) {
+//            update(user);
+//            log.debug(String.format("%s #%s добавлен в друзья к #%s", entityTypeName,  friendId, userId));
+//        } else {
+//            log.debug(String.format("%s #%s уже в друзьях у #%s", entityTypeName,  friendId, userId));
+//        }
+
+        validateId(userStorage, friendId);
         User user = getNonNullObject(userStorage, userId);
-        User friend = getNonNullObject(userStorage, friendId);
-        if (getFriendsKeeper(user).add(friendId)) {
-            update(user);
-            log.debug(String.format("%s #%s добавлен в друзья к #%s", entityTypeName,  friendId, userId));
-        } else {
+        if (getFriendsKeeper(user).contains(friendId)) {
             log.debug(String.format("%s #%s уже в друзьях у #%s", entityTypeName,  friendId, userId));
+            return user;
         }
-        return user;
+        log.debug(userStorage.addFriend(userId, friendId)
+                ? String.format("%s #%s добавлен в друзья к #%s", entityTypeName, friendId, userId)
+                : String.format("Не удалось добавить %s #%s в друзья к #%s", entityTypeName, friendId, userId));
+        return getNonNullObject(userStorage, userId);
     }
 
     public User removeFriend(Long userId, Long friendId) {
+//        User user = getNonNullObject(userStorage, userId);
+//        validateId(userStorage, friendId);
+//        if (getFriendsKeeper(user).remove(friendId)) {
+//            update(user);
+//            log.debug(String.format("%s #%s удален из друзей у #%s", entityTypeName,  friendId, userId));
+//        } else {
+//            log.debug(String.format("%s #%s не было в друзьях у #%s", entityTypeName,  friendId, userId));
+//        }
+//        return user;
+
+        validateId(userStorage, friendId);
         User user = getNonNullObject(userStorage, userId);
-        User friend = getNonNullObject(userStorage, friendId);
-        if (getFriendsKeeper(user).remove(friendId)) {
-            update(user);
-            log.debug(String.format("%s #%s удален из друзей у #%s", entityTypeName,  friendId, userId));
-        } else {
+        if (!getFriendsKeeper(user).contains(friendId)) {
             log.debug(String.format("%s #%s не было в друзьях у #%s", entityTypeName,  friendId, userId));
+            return user;
         }
-        return user;
+        log.debug(userStorage.removeFriend(userId, friendId)
+                ? String.format("%s #%s удален из друзей у #%s", entityTypeName,  friendId, userId)
+                : String.format("Не удалось удалить %s #%s из друзей #%s", entityTypeName, friendId, userId));
+        return getNonNullObject(userStorage, userId);
     }
 
     public List<User> findFriends(Long userId) {

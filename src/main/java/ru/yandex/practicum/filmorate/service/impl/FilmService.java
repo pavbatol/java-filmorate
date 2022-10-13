@@ -43,27 +43,27 @@ public class FilmService extends AbstractService<Film> {
     public Film addLike(Long filmId, Long userId) {
         validateId(userStorage, userId);
         Film film = getNonNullObject(filmStorage,filmId);
-        if (getLikesKeeper(film).add(userId)) {
-            film.setRate(film.getRate() + 1);
-            update(film);
-            log.debug(String.format("%s #%s получил лайк от пользователя #%s", entityTypeName, filmId, userId));
-        } else {
+        if (getLikesKeeper(film).contains(userId)) {
             log.debug(String.format("%s #%s уже имеет лайк от пользователя #%s", entityTypeName, filmId, userId));
+            return film;
         }
-        return film;
+        log.debug(filmStorage.addLike(filmId, userId)
+                ? String.format("%s #%s получил лайк от пользователя #%s", entityTypeName, filmId, userId)
+                : String.format("%s #%s Не удалось добавить лайк от пользователя #%s", entityTypeName, filmId, userId));
+        return getNonNullObject(filmStorage, filmId);
     }
 
     public Film removeLike(Long filmId, Long userId) {
         validateId(userStorage, userId);
-        Film film = getNonNullObject(filmStorage, filmId);
-        if (getLikesKeeper(film).remove(userId)) {
-            film.setRate(film.getRate() - 1);
-            update(film);
-            log.debug(String.format("%s #%s потерял лайк от пользователя #%s", entityTypeName, filmId, userId));
-        } else {
+        Film film = getNonNullObject(filmStorage,filmId);
+        if (!getLikesKeeper(film).contains(userId)) {
             log.debug(String.format("%s #%s не имел лайк от пользователя #%s", entityTypeName, filmId, userId));
+            return film;
         }
-        return film;
+        log.debug(filmStorage.removeLike(filmId, userId)
+                ? String.format("%s #%s потерял лайк от пользователя #%s", entityTypeName, filmId, userId)
+                : String.format("%s #%s Не удалось удалить лайк от пользователя #%s", entityTypeName, filmId, userId));
+        return getNonNullObject(filmStorage, filmId);
     }
 
     public List<Film> findPopularFilms(@Positive int count) {

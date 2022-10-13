@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl.db;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -45,8 +46,6 @@ public class UserDbStorage implements UserStorage {
             log.error(message);
             throw new NotFoundException(message);
         }
-//        String sql = "update users set  email = ?, login = ?, name = ?, birthday = ?"
-//                + "where user_id = ?";
         jdbcTemplate.update(UPDATE_USER_SQL,
                 user.getEmail(),
                 user.getLogin(),
@@ -58,52 +57,48 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User remove(Long id) throws NotFoundException {
+    public User remove(Long id) {
         User user = getNonNullObject(this, id);
-//        final String deleteUserSql = "delete from users where user_id = ?";
-//        final String deleteFriendsSql = "delete from friends where user_id = ? or friend_id = ?";
         if (jdbcTemplate.update(DELETE_USER_FRIENDS_SQL, id) > 0
                 && jdbcTemplate.update(DELETE_USER_SQL, id) > 0) {
             return user;
         }
-        return null;
+        throw new RuntimeException("Не удалось удалить пользователя");
     }
 
     @Override
     public List<User> findAll() {
-//        String sql = "select * from users";
         return jdbcTemplate.query(FIND_ALL_USERS_SQL, this::mapRowToUser);
     }
 
     @Override
     public Optional<User> findById(Long id) {
-//        String sql = "select * from users where user_id = ?";
         List<User> query = jdbcTemplate.query(FIND_USER_BY_ID_SQL, this::mapRowToUser, id);
         return query.stream().findFirst();
     }
 
     @Override
+    public boolean addFriend(Long userId, Long friendId) {
+        try {
+            return jdbcTemplate.update(INSERT_USER_FRIEND_SQL, userId, friendId) == 1;
+        } catch (DataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean removeFriend(Long userId, Long friendId) {
+        return jdbcTemplate.update(DELETE_USER_FRIEND_SQL, userId,  friendId) == 1;
+    }
+
+    @Override
     public List<User> findFriends(Long userId) {
-//        String sql = "select * from users where user_id "
-//        + "in (select friend_id from friends where user_id = ?)";
         return new ArrayList<>( jdbcTemplate.query(FIND_FRIENDS_BY_USER_ID_SQL, this::mapRowToUser, userId));
     }
 
     @Override
     public List<User> findMutualFriends(Long userId, Long otherId) {
-//        String sql = "select * from users u "
-//                + "join ( "
-//                + "   select f.fr_id "
-//                + "   from ( "
-//                + "       select friend_id as fr_id "
-//                + "       from friends "
-//                + "       where user_id = ?) f "
-//                + "   join ( "
-//                + "       select friend_id as fr_id "
-//                + "       from friends "
-//                + "       where user_id = ?) t on t.fr_id = f.fr_id "
-//                + ") mutual on u.user_id = mutual.fr_id";
-        return new ArrayList<>( jdbcTemplate.query(find_Mutual_Friends_SQL, this::mapRowToUser, userId, otherId));
+        return new ArrayList<>( jdbcTemplate.query(FIND_MUTUAL_FRIENDS_SQL, this::mapRowToUser, userId, otherId));
     }
 
     private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
@@ -118,18 +113,15 @@ public class UserDbStorage implements UserStorage {
     }
 
     private Set<Long> getFriendIds(long userId) {
-//        String sql = "select friend_id from friends where user_id = ?";
         return new HashSet<>( jdbcTemplate.query(GET_FRIEND_IDS_BY_USER_ID_SQL,
                 (rs, rowNum) -> rs.getLong("friend_id"), userId));
     }
 
     private void updateFriends(@NonNull User user) {
-//        String deleteFriendsSql = "delete from friends where user_id = ?";
-//        String insertFriendsSql = "insert into friends (user_id, friend_id) values(?, ?)";
         jdbcTemplate.update(DELETE_USER_FRIENDS_SQL, user.getId());
         if (Objects.nonNull(user.getFriends())) {
             user.getFriends().forEach(friendId ->
-                    jdbcTemplate.update(INSERT_USER_FRIENDS_SQL, user.getId(),  friendId));
+                    jdbcTemplate.update(INSERT_USER_FRIEND_SQL, user.getId(),  friendId));
         }
     }
 }

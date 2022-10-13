@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl.db;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,6 @@ import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getN
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-//    private final GenreDBStorage genreDBStorage;
 
     @Override
     public Film add(Film film) {
@@ -50,9 +50,6 @@ public class FilmDbStorage implements FilmStorage {
             log.error(message);
             throw new NotFoundException(message);
         }
-//        String sql = "update films set "
-//                + "name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? , rate = ?"
-//                + "where film_id = ?";
         jdbcTemplate.update(UPDATE_FILM_SQL,
                 film.getName(),
                 film.getDescription(),
@@ -67,43 +64,44 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film remove(Long id) throws NotFoundException {
+    public Film remove(Long id) {
         Film film = getNonNullObject(this, id);
-//        final String deleteFilmSql = "delete from films where film_id = ?";
-//        final String deleteFilmGenresSql = "delete from film_likes where film_id = ?";
-//        final String deleteFilmLikesSql = "delete from film_genres where film_id = ?";
-        if (jdbcTemplate.update(DELETE_FILM_LIKES_SQL, id) > 0
-            && jdbcTemplate.update(DELETE_FILM_GENRES_SQL, id) > 0
+        if (jdbcTemplate.update(DELETE_LIKES_BY_FILM_ID_SQL, id) > 0
+            && jdbcTemplate.update(DELETE_GENRES_BY_FILM_ID_SQL, id) > 0
             && jdbcTemplate.update(DELETE_FILM_SQL, id) > 0) {
             return film;
         }
-        return null;
+        throw new RuntimeException("Не удалось удалить фильм");
     }
 
     @Override
     public List<Film> findAll() {
-//        String sql = "select * from films f "
-//                + "left join (select rating_id as ri, rating as rt, description as dc "
-//                + "from mpa_ratings) r on f.rating_id = ri ";
         return jdbcTemplate.query(FIND_ALL_FILM_SQL, this::mapRowToFilm);
     }
 
     @Override
     public Optional<Film> findById(Long id) {
-//        String sql = "select * from films f "
-//                + "left join (select rating_id as ri, rating as rt, description as dc "
-//                + "from mpa_ratings) r on f.rating_id = ri "
-//                + "where f.film_id = ?";
         List<Film> query = jdbcTemplate.query(FIND_FILM_BY_ID_SQL, this::mapRowToFilm, id);
         return query.stream().findFirst();
     }
 
     @Override
+    public boolean addLike(Long filmId, Long userId) {
+        try {
+            return jdbcTemplate.update(INSERT_LIKE_BY_FILM_ID_AND_USER_ID_SQL, filmId, userId) == 1
+                    && jdbcTemplate.update(UPDATE_FILM_RATE_WITH_INCREMENT_SQL, filmId) == 1;
+        } catch (DataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean removeLike(Long filmId, Long userId) {
+        return jdbcTemplate.update(DELETE_LIKE_BY_FILM_ID_AND_USER_ID_SQL, filmId, userId) == 1;
+    }
+
+    @Override
     public List<Film> findPopularFilms(int count) {
-//        String sql = "select * from films f "
-//                + "left join (select rating_id as ri, rating as rt, description as dc "
-//                + "from mpa_ratings) r on f.rating_id = ri "
-//                + "order by rate desc limit ?";
         return jdbcTemplate.query(FIND_POPULAR_FILMS_SQL, this::mapRowToFilm, count);
     }
 
@@ -125,35 +123,26 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Set<Long> getLikesByFilmId(long filmId) {
-//        String sql = "select user_id from film_likes where film_id = ?";
         return new HashSet<>(jdbcTemplate.query(GET_LIKES_BY_FILM_ID_SQL, (rs, rowNum) -> rs.getLong("user_id"), filmId));
     }
 
     private void updateFilmLikes(@NonNull Film film) {
-//        String deleteLikesSql = "delete from film_likes where film_id = ?";
-//        String insertLikesSql = "insert into film_likes (film_id, user_id) values(?, ?)";
-//        String updateFilmRateSql = "update films set rate = ? where film_id = ?";
-        jdbcTemplate.update(DELETE_LIKES_SQL, film.getId());
+        jdbcTemplate.update(DELETE_LIKES_BY_FILM_ID_SQL, film.getId());
         Optional.ofNullable(film.getLikes()).ifPresent(likes -> {
-            likes.forEach(userId -> jdbcTemplate.update(INSERT_LIKES_SQL, film.getId(), userId));
-            jdbcTemplate.update(UPDATE_FILM_RATE_SQL, film.getRate(), film.getId());
+            likes.forEach(userId -> jdbcTemplate.update(INSERT_LIKE_BY_FILM_ID_AND_USER_ID_SQL, film.getId(), userId));
+            jdbcTemplate.update(UPDATE_FILM_RATE_WITH_VALUE_SQL, film.getRate(), film.getId());
         });
     }
 
     private Set<Genre> getGenresByFilmId(long filmId) {
-//        String sql = "select * from film_genres fg "
-//                + "left join genres g on fg.genre_id = g.genre_id "
-//                + "where fg.film_id = ?";
         return new HashSet<>(jdbcTemplate.query(GET_GENRES_BY_FILM_ID, (rs, rowNum) ->
             new Genre(rs.getLong("genre_id"), rs.getString("name")), filmId));
     }
 
     private void updateFilmGenres(@NonNull Film film) {
-//        String deleteSql = "delete from film_genres where film_id = ?";
-//        String insertSql = "insert into film_genres (film_id, genre_id) values(?, ?)";
-        jdbcTemplate.update(DELETE_FILM_GENRES_SQL, film.getId());
+        jdbcTemplate.update(DELETE_GENRES_BY_FILM_ID_SQL, film.getId());
         Optional.ofNullable(film.getGenres()).ifPresent(genres -> genres.stream()
                 .map(Genre::getId)
-                .forEach(genreId -> jdbcTemplate.update(INSERT_FILM_GENRES_SQL, film.getId(), genreId)));
+                .forEach(genreId -> jdbcTemplate.update(INSERT_GENRE_BY_FILM_ID_ANG_GENRE_ID_SQL, film.getId(), genreId)));
     }
 }
