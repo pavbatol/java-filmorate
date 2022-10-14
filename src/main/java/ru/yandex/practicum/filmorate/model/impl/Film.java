@@ -14,6 +14,7 @@ import java.util.Set;
 import static java.time.Month.DECEMBER;
 
 @Value
+@ToString(callSuper = true)
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor

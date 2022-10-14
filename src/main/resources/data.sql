@@ -11,8 +11,3 @@ MERGE INTO mpa_ratings KEY (rating_id, rating) VALUES (3, 'PG-13', 'Детям �
 MERGE INTO mpa_ratings KEY (rating_id, rating) VALUES (4, 'R', 'Лицам до 17 лет просматривать фильм можно только в присутствии взрослого');
 MERGE INTO mpa_ratings KEY (rating_id, rating) VALUES (5, 'NC-17', 'Лицам до 18 лет просмотр запрещён');
 
-
---INSERT INTO PUBLIC.FILMS (NAME,DESCRIPTION,RELEASE_DATE,DURATION,RATING_ID) VALUES
---	 ('trhfh','hghgfjhgfgdyydghgh','2022-10-06',1,2),
---	 ('trhfh','hghgfjhgfgdyydghgh','2022-10-06',1,1),
---	 ('trhfh','hghgfjhgfgdyydghgh','2022-10-06',1,3);

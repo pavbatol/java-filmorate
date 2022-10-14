@@ -16,7 +16,7 @@ import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.vali
 @RequiredArgsConstructor
 public abstract class AbstractController<T extends Entity, S extends Service<T>> implements Controller<T> {
 
-    protected final S service;
+    private final S service;
 
     @Override
     public T add(@Valid @RequestBody T t) {

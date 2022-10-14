@@ -39,6 +39,8 @@ public interface UserStorage extends Storage<User> {
 
     final static String GET_FRIEND_IDS_BY_USER_ID_SQL = "select friend_id from friends where user_id = ?";
 
+    final static String CLEAR_USERS = "delete from users";
+
     boolean addFriend(Long userId, Long friendId);
 
     boolean removeFriend(Long userId, Long friendId);

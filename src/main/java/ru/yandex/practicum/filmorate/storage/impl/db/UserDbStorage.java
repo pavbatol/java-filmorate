@@ -59,8 +59,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User remove(Long id) {
         User user = getNonNullObject(this, id);
-        if (jdbcTemplate.update(DELETE_USER_FRIENDS_SQL, id) > 0
-                && jdbcTemplate.update(DELETE_USER_SQL, id) > 0) {
+        if (jdbcTemplate.update(DELETE_USER_SQL, id) > 0) {
             return user;
         }
         throw new RuntimeException("Не удалось удалить пользователя");
@@ -123,5 +122,9 @@ public class UserDbStorage implements UserStorage {
             user.getFriends().forEach(friendId ->
                     jdbcTemplate.update(INSERT_USER_FRIEND_SQL, user.getId(),  friendId));
         }
+    }
+
+    public void clear() {
+        jdbcTemplate.update(CLEAR_USERS);
     }
 }

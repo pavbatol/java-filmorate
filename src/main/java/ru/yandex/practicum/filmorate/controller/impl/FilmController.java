@@ -13,26 +13,29 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController extends AbstractController<Film, FilmService> {
 
-    public FilmController(FilmService service) {
-        super(service);
+    private final FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        super(filmService);
+        this.filmService = filmService;
     }
 
     @PutMapping("/{id}/like/{userId}")
     public Film addLike(@PathVariable(value = "id") Long filmId,
                         @PathVariable(value = "userId") Long userId) {
-        return service.addLike(filmId, userId);
+        return filmService.addLike(filmId, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public Film removeLike(@PathVariable(value = "id") Long filmId,
                            @PathVariable(value = "userId") Long userId) {
-        return service.removeLike(filmId, userId);
+        return filmService.removeLike(filmId, userId);
     }
 
     @GetMapping("/popular")
     public List<Film> findPopularFilms(
             @RequestParam(defaultValue = "10", required = false)  @Positive int count) {
-        return service.findPopularFilms(count);
+        return filmService.findPopularFilms(count);
     }
 }
 

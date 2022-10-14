@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.service.impl.GenreService;
 @RequestMapping("/genres")
 public class GenreController extends AbstractController<Genre, GenreService> {
 
-    public GenreController(GenreService service) {
-        super(service);
+    public GenreController(GenreService genreService) {
+        super(genreService);
     }
 }

@@ -47,6 +47,7 @@ public interface FilmStorage extends Storage<Film>{
 
     final static String UPDATE_FILM_RATE_WITH_INCREMENT_SQL = "update films set rate = rate + 1 where film_id = ?";
 
+    final static String CLEAR_FILMS = "delete from films";
 
     boolean addLike(Long filmId, Long userId);
     boolean removeLike(Long filmId, Long userId);

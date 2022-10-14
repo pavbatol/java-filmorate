@@ -66,9 +66,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film remove(Long id) {
         Film film = getNonNullObject(this, id);
-        if (jdbcTemplate.update(DELETE_LIKES_BY_FILM_ID_SQL, id) > 0
-            && jdbcTemplate.update(DELETE_GENRES_BY_FILM_ID_SQL, id) > 0
-            && jdbcTemplate.update(DELETE_FILM_SQL, id) > 0) {
+        if (jdbcTemplate.update(DELETE_FILM_SQL, id) > 0) {
             return film;
         }
         throw new RuntimeException("Не удалось удалить фильм");
@@ -144,5 +142,9 @@ public class FilmDbStorage implements FilmStorage {
         Optional.ofNullable(film.getGenres()).ifPresent(genres -> genres.stream()
                 .map(Genre::getId)
                 .forEach(genreId -> jdbcTemplate.update(INSERT_GENRE_BY_FILM_ID_ANG_GENRE_ID_SQL, film.getId(), genreId)));
+    }
+
+    public void clear() {
+        jdbcTemplate.update(CLEAR_FILMS);
     }
 }

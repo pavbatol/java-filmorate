@@ -31,16 +31,6 @@ public class UserService extends AbstractService<User> {
     }
 
     public User addFriend(Long userId, Long friendId) {
-//        User user = getNonNullObject(userStorage, userId);
-//        validateId(userStorage, friendId);
-//        Set<Long> friends = getFriendsKeeper(user);
-//        if (friends.add(friendId)) {
-//            update(user);
-//            log.debug(String.format("%s #%s добавлен в друзья к #%s", entityTypeName,  friendId, userId));
-//        } else {
-//            log.debug(String.format("%s #%s уже в друзьях у #%s", entityTypeName,  friendId, userId));
-//        }
-
         validateId(userStorage, friendId);
         User user = getNonNullObject(userStorage, userId);
         if (getFriendsKeeper(user).contains(friendId)) {
@@ -54,16 +44,6 @@ public class UserService extends AbstractService<User> {
     }
 
     public User removeFriend(Long userId, Long friendId) {
-//        User user = getNonNullObject(userStorage, userId);
-//        validateId(userStorage, friendId);
-//        if (getFriendsKeeper(user).remove(friendId)) {
-//            update(user);
-//            log.debug(String.format("%s #%s удален из друзей у #%s", entityTypeName,  friendId, userId));
-//        } else {
-//            log.debug(String.format("%s #%s не было в друзьях у #%s", entityTypeName,  friendId, userId));
-//        }
-//        return user;
-
         validateId(userStorage, friendId);
         User user = getNonNullObject(userStorage, userId);
         if (!getFriendsKeeper(user).contains(friendId)) {

@@ -12,30 +12,33 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController extends AbstractController<User, UserService> {
 
-    public UserController(UserService service) {
-        super(service);
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        super(userService);
+        this.userService = userService;
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public User addFriend(@PathVariable(value = "id") Long userId,
                           @PathVariable(value = "friendId") Long friendId) {
-        return service.addFriend(userId, friendId);
+        return userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public User removeFriend(@PathVariable(value = "id") Long userId,
                              @PathVariable(value = "friendId") Long friendId) {
-        return service.removeFriend(userId, friendId);
+        return userService.removeFriend(userId, friendId);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> findFriends(@PathVariable(value = "id") Long userId) {
-        return service.findFriends(userId);
+        return userService.findFriends(userId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> findMutualFriends(@PathVariable(value = "id") Long userId,
                                         @PathVariable(value = "otherId") Long otherId) {
-        return service.findMutualFriends(userId, otherId);
+        return userService.findMutualFriends(userId, otherId);
     }
 }

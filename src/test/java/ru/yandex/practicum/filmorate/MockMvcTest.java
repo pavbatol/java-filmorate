@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 
 
 @SpringBootTest
-@TestPropertySource(properties = "") /* в дальнейшем попробую использовать свойства или через файл*/
+@TestPropertySource(properties = "")
 @AutoConfigureMockMvc(addFilters=false)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MockMvcTest {

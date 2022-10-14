@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.service.impl.MpaRatingService;
 @RequestMapping("/mpa")
 public class MpaRatingController extends AbstractController<MpaRating, MpaRatingService> {
 
-    public MpaRatingController(MpaRatingService service) {
-        super(service);
+    public MpaRatingController(MpaRatingService mpaRatingService) {
+        super(mpaRatingService);
     }
 }
