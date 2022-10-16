@@ -34,7 +34,7 @@ public class UserService extends AbstractService<User> {
         validateId(userStorage, friendId);
         User user = getNonNullObject(userStorage, userId);
         if (getFriendsKeeper(user).contains(friendId)) {
-            log.debug(String.format("%s #%s уже в друзьях у #%s", entityTypeName,  friendId, userId));
+            log.debug(String.format("%s #%s уже в друзьях у #%s", entityTypeName, friendId, userId));
             return user;
         }
         log.debug(userStorage.addFriend(userId, friendId)
@@ -47,11 +47,11 @@ public class UserService extends AbstractService<User> {
         validateId(userStorage, friendId);
         User user = getNonNullObject(userStorage, userId);
         if (!getFriendsKeeper(user).contains(friendId)) {
-            log.debug(String.format("%s #%s не было в друзьях у #%s", entityTypeName,  friendId, userId));
+            log.debug(String.format("%s #%s не было в друзьях у #%s", entityTypeName, friendId, userId));
             return user;
         }
         log.debug(userStorage.removeFriend(userId, friendId)
-                ? String.format("%s #%s удален из друзей у #%s", entityTypeName,  friendId, userId)
+                ? String.format("%s #%s удален из друзей у #%s", entityTypeName, friendId, userId)
                 : String.format("Не удалось удалить %s #%s из друзей #%s", entityTypeName, friendId, userId));
         return getNonNullObject(userStorage, userId);
     }
@@ -70,8 +70,9 @@ public class UserService extends AbstractService<User> {
     @NonNull
     private Set<Long> getFriendsKeeper(@NonNull User user) {
         return Optional.ofNullable(user.getFriends()).orElseGet(() -> {
-                    Set<Long> friends = new HashSet<>();
-                    user.setFriends(friends);
-                    return user.getFriends();});
+            Set<Long> friends = new HashSet<>();
+            user.setFriends(friends);
+            return user.getFriends();
+        });
     }
 }

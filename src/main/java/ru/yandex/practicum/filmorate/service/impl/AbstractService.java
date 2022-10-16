@@ -41,6 +41,7 @@ public abstract class AbstractService<T extends Entity> implements Service<T> {
         log.debug("Обновлен {}: {}", entityTypeName, removed);
         return removed;
     }
+
     @Override
     public List<T> findAll() {
         List<T> found = storage.findAll();

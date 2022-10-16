@@ -99,7 +99,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                      WebRequest request) {
 
         log.error(message + ": {}", ex.getMessage(), ex);
-        ErrorResponse errorResponse =  getNewBody(message, status, request, ex);
+        ErrorResponse errorResponse = getNewBody(message, status, request, ex);
         return new ResponseEntity<>(errorResponse, status);
     }
 

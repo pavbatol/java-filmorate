@@ -42,7 +42,7 @@ public class FilmService extends AbstractService<Film> {
 
     public Film addLike(Long filmId, Long userId) {
         validateId(userStorage, userId);
-        Film film = getNonNullObject(filmStorage,filmId);
+        Film film = getNonNullObject(filmStorage, filmId);
         if (getLikesKeeper(film).contains(userId)) {
             log.debug(String.format("%s #%s уже имеет лайк от пользователя #%s", entityTypeName, filmId, userId));
             return film;
@@ -55,7 +55,7 @@ public class FilmService extends AbstractService<Film> {
 
     public Film removeLike(Long filmId, Long userId) {
         validateId(userStorage, userId);
-        Film film = getNonNullObject(filmStorage,filmId);
+        Film film = getNonNullObject(filmStorage, filmId);
         if (!getLikesKeeper(film).contains(userId)) {
             log.debug(String.format("%s #%s не имел лайк от пользователя #%s", entityTypeName, filmId, userId));
             return film;
@@ -76,6 +76,7 @@ public class FilmService extends AbstractService<Film> {
         return Optional.ofNullable(film.getLikes()).orElseGet(() -> {
             Set<Long> likes = new HashSet<>();
             film.setLikes(likes);
-            return film.getLikes();});
+            return film.getLikes();
+        });
     }
 }

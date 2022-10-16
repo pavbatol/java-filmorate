@@ -11,7 +11,7 @@ public interface Validator<T> {
             validate(t);
         } catch (ValidateException e) {
             System.out.printf("Валидация полей для %s не пройдена: %s",
-                    t.getClass().getSimpleName(),  e.getMessage());
+                    t.getClass().getSimpleName(), e.getMessage());
             throw e;
         }
     }

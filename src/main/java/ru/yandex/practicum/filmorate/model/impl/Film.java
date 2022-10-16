@@ -18,7 +18,7 @@ import static java.time.Month.DECEMBER;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class Film extends AbstractEntity{
+public class Film extends AbstractEntity {
 
     @NonNull
     @NotBlank

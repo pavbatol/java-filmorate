@@ -32,7 +32,7 @@ public final class ValidatorManager {
     }
 
     @NonNull
-    public static <T> T getNonNullObject(@NonNull Storage<T> storage, Long id) throws NotFoundException{
+    public static <T> T getNonNullObject(@NonNull Storage<T> storage, Long id) throws NotFoundException {
         return storage.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Объект по id %s не найден", id)));
     }

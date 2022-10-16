@@ -13,7 +13,7 @@ public abstract class AbstractValidator<T> implements Validator<T> {
             validate(t);
         } catch (ValidateException e) {
             log.debug("Валидация полей для {} не пройдена: {}",
-                    t.getClass().getSimpleName(),  e.getMessage());
+                    t.getClass().getSimpleName(), e.getMessage());
             throw e;
         }
     }
