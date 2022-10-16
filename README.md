@@ -10,15 +10,13 @@ select *
 from films
 ```
 #### Пример запроса - получить топ 10 наиболее популярных фильмов
-```SQL
-SELECT f.name
-FROM films f
-JOIN (
-    SELECT film_id
-    FROM film_likes
-    GROUP BY film_id
-    ORDER BY COUNT(user_id) DESC
-    LIMIT 10) t ON t.film_id = f.film_id   
+```SQL    
+select f.name
+from film_likes l
+join films f on f.film_id = l.film_id
+group by l.film_id
+order by count(l.user_id) desc
+limit 10 
 ```
 #### Пример запроса - получить всех пользователей
 ```SQL
@@ -27,18 +25,13 @@ from users
 ```
 #### Пример запроса - список общих друзей с другим пользователем
 ```SQL
---Имея id двух пользователей: userId и otherId
+--Имея id двух пользователей: USERID и OTHERID
 
-SELECT * FROM users u
-JOIN (
-	SELECT f.fr_id
-	FROM (
-		SELECT friend_id AS fr_id
-		FROM friends
-		WHERE user_id = userId) f
-	JOIN (
-		SELECT friend_id AS fr_id
-		FROM friends
-		WHERE user_id = otherId) t ON t.fr_id = f.fr_id 
-) mutual ON u.user_id = mutual.fr_id
+select u.* from friends f
+left join users u on f.friend_id = u.user_id
+where f.user_id = USERID
+	and f.friend_id in (
+		select f.friend_id
+		from friends f
+		where f.user_id = OTHERID)
 ```

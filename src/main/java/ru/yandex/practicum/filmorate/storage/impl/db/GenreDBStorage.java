@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.impl.db;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,11 @@ import java.util.Optional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class GenreDBStorage  implements GenreStorage {
+public class GenreDBStorage implements GenreStorage {
+
+    final static String UPDATE_GENRE_SQL = "update genres g set name = ? where g.genre_id = ?";
+    final static String FIND_ALL_GENRES_SQL = "select * from genres";
+    final static String FIND_GENRE_BY_ID_SQL = "select * from genres g where g.genre_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -54,8 +59,11 @@ public class GenreDBStorage  implements GenreStorage {
 
     @Override
     public Optional<Genre> findById(Long id) {
-        List<Genre> query = jdbcTemplate.query(FIND_GENRE_BY_ID_SQL, this::mapRowToGenre, id);
-        return query.stream().findFirst();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_GENRE_BY_ID_SQL, this::mapRowToGenre, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     private Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {

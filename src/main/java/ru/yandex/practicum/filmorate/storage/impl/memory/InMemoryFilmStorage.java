@@ -20,9 +20,11 @@ public class InMemoryFilmStorage
         extends AbstractInMemoryStorage<Film>
         implements FilmStorage {
 
+    private final static String GENERIC_TYPE_NAME = "Фильм";
+
     @Override
     protected String getGenericTypeName() {
-        return "Фильм";
+        return GENERIC_TYPE_NAME;
     }
 
     @Override
@@ -51,7 +53,8 @@ public class InMemoryFilmStorage
         return Optional.ofNullable(film.getLikes()).orElseGet(() -> {
             Set<Long> likes = new HashSet<>();
             film.setLikes(likes);
-            return film.getLikes();});
+            return film.getLikes();
+        });
     }
 
     public int filmCompare(@NonNull Film f1, @NonNull Film f2) {

@@ -19,9 +19,11 @@ public class InMemoryUserStorage
         extends AbstractInMemoryStorage<User>
         implements UserStorage {
 
+    private final static String GENERIC_TYPE_NAME = "Пользователь";
+
     @Override
     protected String getGenericTypeName() {
-        return "Пользователь";
+        return GENERIC_TYPE_NAME;
     }
 
     @Override
@@ -69,7 +71,8 @@ public class InMemoryUserStorage
         return Optional.ofNullable(user.getFriends()).orElseGet(() -> {
             Set<Long> friends = new HashSet<>();
             user.setFriends(friends);
-            return user.getFriends();});
+            return user.getFriends();
+        });
     }
 
     private boolean isAnyNull(Object... o) {

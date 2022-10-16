@@ -31,7 +31,7 @@ public abstract class AbstractInMemoryStorage<T extends Entity> implements Stora
     public T add(@NonNull T t) {
         t.setId(generateId());
         if (contains(t.getId())) {
-            String message = String.format("Такой id для %s уже есть: %s", t.getClass().getSimpleName(), t.getId());
+            String message = String.format("Такой id для %s уже есть: %s", entityTypeName, t.getId());
             log.error(message);
             throw new AlreadyExistsException(message);
         }
@@ -42,7 +42,7 @@ public abstract class AbstractInMemoryStorage<T extends Entity> implements Stora
     @Override
     public T update(@NonNull T t) {
         if (!contains(t.getId())) {
-            String message = String.format("Такого id для %s нет: %s", t.getClass().getSimpleName(), t.getId());
+            String message = String.format("Такого id для %s нет: %s", entityTypeName, t.getId());
             log.error(message);
             throw new NotFoundException(message);
         }

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.impl.db;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,10 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class MpaRatingDBStorage implements MpaRatingStorage {
+
+    final static String UPDATE_MPARATING_SQL = "update mpa_ratings m set rating = ?, description = ? where m.rating_id = ?";
+    final static String FIND_ALL_MPARATINGS_SQL = "select * from mpa_ratings";
+    final static String FIND_MPARATING_BY_ID_SQL = "select * from mpa_ratings m where m.rating_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -56,8 +61,11 @@ public class MpaRatingDBStorage implements MpaRatingStorage {
 
     @Override
     public Optional<MpaRating> findById(Long id) {
-        List<MpaRating> query = jdbcTemplate.query(FIND_MPARATING_BY_ID_SQL, this::mapRowToMpaRating, id);
-        return query.stream().findFirst();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_MPARATING_BY_ID_SQL, this::mapRowToMpaRating, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     private MpaRating mapRowToMpaRating(ResultSet rs, int rowNum) throws SQLException {
