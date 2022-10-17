@@ -26,6 +26,7 @@ public class FilmService extends AbstractService<Film> {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final static String GENERIC_TYPE_NAME = "Фильм";
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage storage,
@@ -37,7 +38,7 @@ public class FilmService extends AbstractService<Film> {
 
     @Override
     protected String getGenericTypeName() {
-        return "Фильм";
+        return GENERIC_TYPE_NAME;
     }
 
     public Film addLike(Long filmId, Long userId) {
@@ -67,8 +68,7 @@ public class FilmService extends AbstractService<Film> {
     }
 
     public List<Film> findPopularFilms(@Positive int count) {
-        List<Film> result = filmStorage.findPopularFilms(count);
-        return result;
+        return filmStorage.findPopularFilms(count);
     }
 
     @NonNull

@@ -7,12 +7,14 @@ import ru.yandex.practicum.filmorate.storage.GenreStorage;
 @Service
 public class GenreService extends AbstractService<Genre> {
 
+    private final static String GENERIC_TYPE_NAME = "Жанр";
+
     public GenreService(GenreStorage storage) {
         super(storage);
     }
 
     @Override
     protected String getGenericTypeName() {
-        return "Жанр";
+        return GENERIC_TYPE_NAME;
     }
 }

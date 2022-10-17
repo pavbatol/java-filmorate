@@ -82,7 +82,7 @@ public class FilmDbStorage implements FilmStorage {
         values.put("rate", 0);
         film.setId(simpleJdbcInsert.executeAndReturnKey(values).longValue());
         updateFilmGenres(film);
-        return findById(film.getId()).orElse(film);
+        return getNonNullObject(this, film.getId());
     }
 
     @Override
@@ -102,7 +102,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId());
         updateFilmLikes(film);
         updateFilmGenres(film);
-        return film;
+        return getNonNullObject(this, film.getId());
     }
 
     @Override
@@ -176,10 +176,12 @@ public class FilmDbStorage implements FilmStorage {
 
     private void updateFilmLikes(@NonNull Film film) {
         jdbcTemplate.update(DELETE_LIKES_BY_FILM_ID_SQL, film.getId());
-        Optional.ofNullable(film.getLikes()).ifPresent(likes -> {
-            likes.forEach(userId -> jdbcTemplate.update(INSERT_LIKE_BY_FILM_ID_AND_USER_ID_SQL, film.getId(), userId));
-            jdbcTemplate.update(UPDATE_FILM_RATE_WITH_VALUE_SQL, film.getRate(), film.getId());
-        });
+        Optional.ofNullable(film.getLikes()).ifPresentOrElse(
+                likes -> {
+                    likes.forEach(userId -> jdbcTemplate.update(INSERT_LIKE_BY_FILM_ID_AND_USER_ID_SQL, film.getId(), userId));
+                    jdbcTemplate.update(UPDATE_FILM_RATE_WITH_VALUE_SQL, film.getLikes().size(), film.getId());
+                },
+                () -> jdbcTemplate.update(UPDATE_FILM_RATE_WITH_VALUE_SQL, 0, film.getId()));
     }
 
     private Set<Genre> getGenresByFilmId(long filmId) {

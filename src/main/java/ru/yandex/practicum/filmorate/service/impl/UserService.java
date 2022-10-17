@@ -18,6 +18,7 @@ import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.vali
 public class UserService extends AbstractService<User> {
 
     private final UserStorage userStorage;
+    private final static String GENERIC_TYPE_NAME = "Пользователь";
 
     @Autowired
     public UserService(@Qualifier("userDbStorage") UserStorage storage) {
@@ -27,7 +28,7 @@ public class UserService extends AbstractService<User> {
 
     @Override
     protected String getGenericTypeName() {
-        return "Пользователь";
+        return GENERIC_TYPE_NAME;
     }
 
     public User addFriend(Long userId, Long friendId) {
