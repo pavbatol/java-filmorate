@@ -198,7 +198,6 @@ class FilmorateApplicationTests {
                             assertThat(fm).hasFieldOrPropertyWithValue("description", newDescription);
                             assertThat(fm).hasFieldOrPropertyWithValue("releaseDate", newReleaseDate);
                             assertThat(fm).hasFieldOrPropertyWithValue("duration", newDuration);
-                            assertThat(fm).hasFieldOrPropertyWithValue("rate", newRate);
                         }
                 );
     }
