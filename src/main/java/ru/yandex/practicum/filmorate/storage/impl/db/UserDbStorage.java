@@ -33,19 +33,24 @@ public class UserDbStorage implements UserStorage {
     private final static String FIND_USER_BY_ID_SQL = "select * from users u where u.user_id = ?";
 
     private final static String FIND_FRIENDS_BY_USER_ID_SQL = "select u.* from friends f "
-            + "left join users u on f.friend_id = u.user_id "
+            + "join users u on f.friend_id = u.user_id "
             + "where f.user_id = ?";
 
+    private final static String FIND_CONFIRMED_FRIENDS_BY_USER_ID_SQL = "select u.* from friends f "
+            + "join friends f2 on f.friend_id = f2.user_id "
+            + "join users u on f.friend_id = u.user_id "
+            + "where f.user_id = ? and f2.friend_id = ?";
+
     private final static String FIND_MUTUAL_FRIENDS_SQL = "select u.* from friends f "
-            + "left join users u on f.friend_id = u.user_id "
-            + "where f.user_id = ? and f.friend_id in "
-            + "(select f.friend_id from friends f where f.user_id = ?)";
+            + "join friends f2 on f.friend_id = f2.friend_id "
+            + "join users u on f.friend_id = u.user_id "
+            + "where f.user_id = ? and f2.user_id = ? ";
 
     private final static String INSERT_USER_FRIEND_SQL = "insert into friends (user_id, friend_id) values(?, ?)";
 
     private final static String DELETE_USER_FRIEND_SQL = "delete from friends f where f.user_id = ? and f.friend_id = ?";
 
-    private final static String DELETE_USER_FRIENDS_SQL = "delete from friends f where f.user_id = ?";
+    private final static String DELETE_ALL_USER_FRIENDS_SQL = "delete from friends f where f.user_id = ?";
 
     private final static String GET_FRIEND_IDS_BY_USER_ID_SQL = "select f.friend_id from friends f where f.user_id = ?";
 
@@ -123,6 +128,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findFriends(Long userId) {
+        /* Для подтвержденных используйте FIND_CONFIRMED_FRIENDS_BY_USER_ID_SQL */
         return new ArrayList<>(jdbcTemplate.query(FIND_FRIENDS_BY_USER_ID_SQL, this::mapRowToUser, userId));
     }
 
@@ -148,7 +154,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     private void updateFriends(@NonNull User user) {
-        jdbcTemplate.update(DELETE_USER_FRIENDS_SQL, user.getId());
+        jdbcTemplate.update(DELETE_ALL_USER_FRIENDS_SQL, user.getId());
         if (Objects.nonNull(user.getFriends())) {
             user.getFriends().forEach(friendId ->
                     jdbcTemplate.update(INSERT_USER_FRIEND_SQL, user.getId(), friendId));
