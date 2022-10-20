@@ -36,6 +36,13 @@ public class UserDbStorage implements UserStorage {
             + "join users u on f.friend_id = u.user_id "
             + "where f.user_id = ?";
 
+    private final static String FIND_FRIENDS_WITH_MARK_BY_USER_ID_SQL = "select u.*, "
+            + "case when f2.friend_id is not null then 'true' else 'false' end confirmed "
+            + "from friends f "
+            + "left join friends f2 on f.friend_id = f2.user_id and f.user_id = ? and f2.friend_id = ? "
+            + "join users u on f.friend_id = u.user_id "
+            + "where f.user_id  = ?";
+
     private final static String FIND_CONFIRMED_FRIENDS_BY_USER_ID_SQL = "select u.* from friends f "
             + "join friends f2 on f.friend_id = f2.user_id "
             + "join users u on f.friend_id = u.user_id "
@@ -128,7 +135,6 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findFriends(Long userId) {
-        /* Для подтвержденных используйте FIND_CONFIRMED_FRIENDS_BY_USER_ID_SQL */
         return new ArrayList<>(jdbcTemplate.query(FIND_FRIENDS_BY_USER_ID_SQL, this::mapRowToUser, userId));
     }
 
