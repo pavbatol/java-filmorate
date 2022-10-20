@@ -43,7 +43,7 @@ where f.user_id = USERID
 ```SQL
 --Имея id пользователя: USERID
 
-select u.*, case when f2.friend_id is not null then 'true' else 'false' end confirmed 
+select u.*, case when f2.friend_id is not null then true else false end confirmed 
 from friends f 
 left join friends f2 on f.friend_id = f2.user_id and f.user_id = USERID and f2.friend_id = USERID 
 join users u on f.friend_id = u.user_id 
@@ -58,4 +58,14 @@ select u.* from friends f
 join friends f2 on f.friend_id = f2.user_id 
 join users u on f.friend_id = u.user_id 
 where f.user_id = USERID and f2.friend_id = USERID
+```
+
+#### Пример запроса - список НЕподтвержденных друзей пользователя
+```SQL
+--Имея id пользователя: USERID
+
+select u.* from friends f
+left join friends f2 on f.friend_id = f2.user_id and f.user_id = USERID and f2.friend_id = USERID
+join users u on f.friend_id = u.user_id
+where f.user_id  = USERID and f2.friend_id is null
 ```
