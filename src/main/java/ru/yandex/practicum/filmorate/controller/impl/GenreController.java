@@ -14,4 +14,14 @@ public class GenreController extends AbstractController<Genre, GenreService> {
     public GenreController(GenreService genreService) {
         super(genreService);
     }
+
+    @Override
+    public Genre add(Genre genre) {
+        throw new UnsupportedOperationException("Изменение справочника пользователем сервиса не поддерживается");
+    }
+
+    @Override
+    public Genre update(Genre genre) {
+        throw new UnsupportedOperationException("Изменение справочника пользователем сервиса не поддерживается");
+    }
 }

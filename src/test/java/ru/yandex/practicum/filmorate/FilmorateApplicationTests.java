@@ -278,8 +278,8 @@ class FilmorateApplicationTests {
 
         assertThat(byId)
                 .isPresent()
-                .hasValueSatisfying(us -> {
-                            assertThat(us).hasFieldOrPropertyWithValue("name", newName);
+                .hasValueSatisfying(gr -> {
+                            assertThat(gr).hasFieldOrPropertyWithValue("name", newName);
                         }
                 );
     }
@@ -306,9 +306,9 @@ class FilmorateApplicationTests {
 
         assertThat(byId)
                 .isPresent()
-                .hasValueSatisfying(us -> {
-                            assertThat(us).hasFieldOrPropertyWithValue("name", newName);
-                            assertThat(us).hasFieldOrPropertyWithValue("description", description);
+                .hasValueSatisfying(mpa -> {
+                            assertThat(mpa).hasFieldOrPropertyWithValue("name", newName);
+                            assertThat(mpa).hasFieldOrPropertyWithValue("description", description);
                         }
                 );
     }

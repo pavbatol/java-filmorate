@@ -14,4 +14,14 @@ public class MpaRatingController extends AbstractController<MpaRating, MpaRating
     public MpaRatingController(MpaRatingService mpaRatingService) {
         super(mpaRatingService);
     }
+
+    @Override
+    public MpaRating add(MpaRating mpaRating) {
+        throw new UnsupportedOperationException("Изменение справочника пользователем сервиса не поддерживается");
+    }
+
+    @Override
+    public MpaRating update(MpaRating mpaRating) {
+        throw new UnsupportedOperationException("Изменение справочника пользователем сервиса не поддерживается");
+    }
 }
