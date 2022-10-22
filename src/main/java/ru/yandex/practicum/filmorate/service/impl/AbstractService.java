@@ -38,7 +38,7 @@ public abstract class AbstractService<T extends Entity> implements Service<T> {
     @Override
     public T remove(Long id) {
         T removed = storage.remove(id);
-        log.debug("Обновлен {}: {}", entityTypeName, removed);
+        log.debug("Удален {}: {}", entityTypeName, removed);
         return removed;
     }
 

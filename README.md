@@ -4,6 +4,8 @@
 ### Схемы базы данных
 ![ER-diagram](filmorate.png)
 
+###### Swagger API: http://localhost:8080/swagger-ui.html
+
 ###### Пример запроса - получить все фильмы
 ```SQL
 select f.name
