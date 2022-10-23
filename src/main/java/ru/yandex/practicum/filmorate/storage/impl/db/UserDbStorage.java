@@ -140,12 +140,12 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findFriends(Long userId) {
-        return new ArrayList<>(jdbcTemplate.query(FIND_FRIENDS_BY_USER_ID_SQL, this::mapRowToUser, userId));
+        return jdbcTemplate.query(FIND_FRIENDS_BY_USER_ID_SQL, this::mapRowToUser, userId);
     }
 
     @Override
     public List<User> findMutualFriends(Long userId, Long otherId) {
-        return new ArrayList<>(jdbcTemplate.query(FIND_MUTUAL_FRIENDS_SQL, this::mapRowToUser, userId, otherId));
+        return jdbcTemplate.query(FIND_MUTUAL_FRIENDS_SQL, this::mapRowToUser, userId, otherId);
     }
 
     private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
@@ -166,10 +166,11 @@ public class UserDbStorage implements UserStorage {
 
     private void updateFriends(@NonNull User user) {
         jdbcTemplate.update(DELETE_ALL_USER_FRIENDS_SQL, user.getId());
-        if (Objects.nonNull(user.getFriends())) {
-            user.getFriends().forEach(friendId ->
-                    jdbcTemplate.update(INSERT_USER_FRIEND_SQL, user.getId(), friendId));
-        }
+        Optional.ofNullable(user.getFriends()).ifPresent(ids ->
+                jdbcTemplate.batchUpdate(INSERT_USER_FRIEND_SQL, ids, ids.size(), (ps, id) -> {
+                    ps.setLong(1, user.getId());
+                    ps.setLong(2, id);
+                }));
     }
 
     public void clear() {
