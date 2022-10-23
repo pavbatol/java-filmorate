@@ -171,15 +171,19 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Set<Long> getLikesByFilmId(long filmId) {
-        return new HashSet<>(jdbcTemplate.query(GET_LIKES_BY_FILM_ID_SQL, (rs, rowNum) -> rs.getLong("user_id"), filmId));
+        return new HashSet<>(jdbcTemplate.query(GET_LIKES_BY_FILM_ID_SQL,
+                (rs, rowNum) -> rs.getLong("user_id"), filmId));
     }
 
     private void updateFilmLikes(@NonNull Film film) {
         jdbcTemplate.update(DELETE_LIKES_BY_FILM_ID_SQL, film.getId());
         Optional.ofNullable(film.getLikes()).ifPresentOrElse(
                 likes -> {
-                    likes.forEach(userId -> jdbcTemplate.update(INSERT_LIKE_BY_FILM_ID_AND_USER_ID_SQL, film.getId(), userId));
-                    jdbcTemplate.update(UPDATE_FILM_RATE_WITH_VALUE_SQL, film.getLikes().size(), film.getId());
+                    jdbcTemplate.batchUpdate(INSERT_LIKE_BY_FILM_ID_AND_USER_ID_SQL, likes, likes.size(), (ps, id) -> {
+                        ps.setLong(1, film.getId());
+                        ps.setLong(2, id);
+                    });
+                    jdbcTemplate.update(UPDATE_FILM_RATE_WITH_VALUE_SQL, likes.size(), film.getId());
                 },
                 () -> jdbcTemplate.update(UPDATE_FILM_RATE_WITH_VALUE_SQL, 0, film.getId()));
     }
@@ -191,9 +195,12 @@ public class FilmDbStorage implements FilmStorage {
 
     private void updateFilmGenres(@NonNull Film film) {
         jdbcTemplate.update(DELETE_GENRES_BY_FILM_ID_SQL, film.getId());
-        Optional.ofNullable(film.getGenres()).ifPresent(genres -> genres.stream()
-                .map(Genre::getId)
-                .forEach(genreId -> jdbcTemplate.update(INSERT_GENRE_BY_FILM_ID_ANG_GENRE_ID_SQL, film.getId(), genreId)));
+        Optional.ofNullable(film.getGenres()).ifPresent(genres -> {
+            jdbcTemplate.batchUpdate(INSERT_GENRE_BY_FILM_ID_ANG_GENRE_ID_SQL, genres, genres.size(), (ps, genre) -> {
+                ps.setLong(1, film.getId());
+                ps.setLong(2, genre.getId());
+            });
+        });
     }
 
     public void clear() {
