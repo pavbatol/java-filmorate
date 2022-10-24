@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.validator.impl;
 
 import lombok.NonNull;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Entity;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.model.impl.Genre;
 import ru.yandex.practicum.filmorate.model.impl.MpaRating;
@@ -12,8 +13,8 @@ public final class ValidatorManager {
     private ValidatorManager() {
     }
 
-    public static <T> void validateEntity(T t) {
-        Class<?> clazz = t.getClass();
+    public static <T extends Entity> void validateEntity(T t) {
+        Class<? extends Entity> clazz = t.getClass();
         if (clazz == Film.class) {
             new FilmValidator().runValidation((Film) t);
         } else if (clazz == User.class) {
