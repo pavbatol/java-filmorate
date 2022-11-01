@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Value
+@ToString(callSuper = true)
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor

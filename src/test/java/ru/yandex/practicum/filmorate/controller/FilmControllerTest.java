@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.yandex.practicum.filmorate.controller.impl.FilmController;
+import ru.yandex.practicum.filmorate.model.impl.MpaRating;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.MockMvcTest;
 
@@ -35,9 +37,9 @@ class FilmControllerTest {
     private static final String VALID_DESCRIPTION = "TestTest TestTest";
     private static final LocalDate VALID_DATE = LocalDate.now().minusDays(1);
     private static final long VALID_DURATION = 1;
-    private static final LocalDate CINEMA_DAY =  LocalDate.of(1895, DECEMBER, 28);
+    private static final LocalDate CINEMA_DAY = LocalDate.of(1895, DECEMBER, 28);
     private static final Set<Long> VALID_LIKES = null; //new HashSet<>();
-    private static final LocalDate CURRENT_DAY =  LocalDate.now();
+    private static final LocalDate CURRENT_DAY = LocalDate.now();
 
     @BeforeEach
     void setUp() {
@@ -61,7 +63,7 @@ class FilmControllerTest {
         Film film = validFilm.toBuilder().name("  ").build();
 
         mvc.perform(post("/films")
-                .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -77,7 +79,7 @@ class FilmControllerTest {
         Film film = validFilm.toBuilder().description(new String(new char[201])).build();
 
         mvc.perform(post("/films")
-                .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -111,7 +113,7 @@ class FilmControllerTest {
         Film film = validFilm.toBuilder().duration(-1).build();
 
         mvc.perform(post("/films")
-                .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -123,6 +125,9 @@ class FilmControllerTest {
                 .releaseDate(VALID_DATE)
                 .duration(VALID_DURATION)
                 .likes(VALID_LIKES)
+                .genres(null)
+                .mpa(new MpaRating(1, "G", "testName"))
+                .rate(0)
                 .build();
     }
 }

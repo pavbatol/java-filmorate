@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.yandex.practicum.filmorate.controller.impl.UserController;
 import ru.yandex.practicum.filmorate.model.impl.User;
 import ru.yandex.practicum.filmorate.MockMvcTest;
 
@@ -36,7 +37,7 @@ class UserControllerTest {
     private static final String VALID_NAME = "testName";
     private static final LocalDate VALID_DATE = LocalDate.now().minusDays(1);
     private static final Set<Long> VALID_FRIENDS = new HashSet<>();
-    private static final LocalDate CURRENT_DAY =  LocalDate.now();
+    private static final LocalDate CURRENT_DAY = LocalDate.now();
 
     @BeforeEach
     void setUp() {
@@ -141,8 +142,7 @@ class UserControllerTest {
     }
 
     private User getNewValidUser() {
-//        return new User(VALID_ID, VALID_EMAIL, VALID_LOGIN, VALID_NAME, VALID_DATE, VALID_FRIENDS);
-        return  User.builder()
+        return User.builder()
                 .id(VALID_ID)
                 .email(VALID_EMAIL)
                 .login(VALID_LOGIN)

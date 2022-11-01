@@ -14,10 +14,11 @@ import java.util.Set;
 import static java.time.Month.DECEMBER;
 
 @Value
+@ToString(callSuper = true)
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class Film extends AbstractEntity{
+public class Film extends AbstractEntity {
 
     @NonNull
     @NotBlank
@@ -37,4 +38,16 @@ public class Film extends AbstractEntity{
     @NonFinal
     @Setter
     Set<Long> likes;
+
+    @NonFinal
+    @Setter
+    Set<Genre> genres;
+
+    @NonFinal
+    @NonNull
+    MpaRating mpa;
+
+    @NonFinal
+    @Setter
+    int rate;
 }
