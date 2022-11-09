@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.model.enums.SortByType;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 
 import javax.validation.constraints.Positive;
@@ -12,4 +13,6 @@ public interface FilmStorage extends Storage<Film> {
     boolean removeLike(Long filmId, Long userId);
 
     List<Film> findPopularFilms(@Positive int count);
+
+    List<Film> findByDirectorId(Long directorId, List<SortByType> sortParams);
 }

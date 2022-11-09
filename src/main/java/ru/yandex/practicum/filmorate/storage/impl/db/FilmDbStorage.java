@@ -8,7 +8,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.enums.SortByType;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.model.impl.Genre;
 import ru.yandex.practicum.filmorate.model.impl.MpaRating;
@@ -17,10 +19,12 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
 
 @Slf4j
+@Validated
 @Component("filmDbStorage")
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
@@ -152,6 +156,49 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> findPopularFilms(int count) {
         return jdbcTemplate.query(FIND_POPULAR_FILMS_SQL, this::mapRowToFilm, count);
     }
+
+    @Override
+    public List<Film> findByDirectorId(Long directorId, @NonNull List<SortByType> sortTypes) {
+        class pass {
+            public String sortTypeToFieldName(SortByType sortByType) {
+                switch (sortByType) {
+                    case YEAR: return "f.release_date";
+                    case LIKES: return "fl";
+                    default: throw new IllegalArgumentException(String.format("Не соответствие для %s: %s",
+                                SortByType.class.getSimpleName(), sortTypes));
+                }
+            }
+        }
+
+        List<String> fields = new LinkedHashSet<>(sortTypes).stream()
+                .map(sortByType -> new pass().sortTypeToFieldName(sortByType))
+                .collect(Collectors.toList());
+
+        String questionMarks = "?,".repeat(fields.size());
+        questionMarks = questionMarks.substring(0, questionMarks.length() - 1);
+
+//        System.out.println(questionMarks);
+
+        String FIND_FILMS_BY_DIRECTOR_WITH_SORT = "select * from films f " +
+                "join film_directors fd on f.film_id = fd.film_id " +
+                "left join film_likes fl on f.film_id = fl.film_id " +
+                "where fd.director_id = ? " +
+                "order by " + questionMarks;
+
+//        System.out.println(FIND_FILMS_BY_DIRECTOR_WITH_SORT);
+
+        return jdbcTemplate.query(FIND_FILMS_BY_DIRECTOR_WITH_SORT, this::mapRowToFilm, directorId, fields);
+
+//        return null;
+    }
+
+//    private String sortTypeToFieldName(SortByType sortByType) {
+//        switch (sortByType) {
+//            case YEAR: return "release_date";
+//            case LIKES: return "fl";
+//            default: throw  new IllegalArgumentException();
+//        }
+//    }
 
     private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
         long filmId = rs.getLong("film_id");

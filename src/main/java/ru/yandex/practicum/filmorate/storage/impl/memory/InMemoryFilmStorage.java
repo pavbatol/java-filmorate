@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl.memory;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.enums.SortByType;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
@@ -46,6 +47,14 @@ public class InMemoryFilmStorage
         log.debug("Найдено {} для {} из запрошенных {} с наибольшим количеством лайков",
                 result.size(), entityTypeName, count);
         return result;
+    }
+
+    /**
+     * Заглушка
+     */
+    @Override
+    public List<Film> findByDirectorId(Long directorId, @NonNull List<SortByType> sorts) {
+        return null;
     }
 
     @NonNull
