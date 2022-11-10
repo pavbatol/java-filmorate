@@ -1,15 +1,15 @@
 package ru.yandex.practicum.filmorate.model.impl;
 
-import lombok.*;
-import lombok.experimental.Accessors;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.model.Entity;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
-//@Builder
-//@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"name"})

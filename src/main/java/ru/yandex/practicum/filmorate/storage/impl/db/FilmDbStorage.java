@@ -8,7 +8,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.enums.SortByType;
 import ru.yandex.practicum.filmorate.model.impl.Director;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
 
 @Slf4j
-@Validated
 @Component("filmDbStorage")
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {

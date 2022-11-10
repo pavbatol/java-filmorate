@@ -49,12 +49,9 @@ public class InMemoryFilmStorage
         return result;
     }
 
-    /**
-     * Заглушка
-     */
     @Override
     public List<Film> findByDirectorIdWithSort(Long directorId, @NonNull List<SortByType> sorts) {
-        return null;
+        throw new UnsupportedOperationException("Метод в секции 'ьуьщкн' не поддерживается");
     }
 
     @NonNull

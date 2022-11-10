@@ -100,7 +100,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void whenAdd_should_status_400_if_date_is_future() throws Exception {
+    void whenAdd_should_status_200_if_date_is_future() throws Exception {
         Film film = validFilm.toBuilder().releaseDate(CURRENT_DAY.plusDays(1)).build();
 
         mvc.perform(post("/films")
