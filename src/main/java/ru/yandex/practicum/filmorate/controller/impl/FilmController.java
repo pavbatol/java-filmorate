@@ -41,5 +41,12 @@ public class FilmController extends AbstractController<Film, FilmService> {
             @RequestParam(defaultValue = "10", required = false) @Positive int count) {
         return filmService.findPopularFilms(count);
     }
+
+    @GetMapping("/director/{directorId}")
+    @Operation(summary = "findByDirectorIdWithSort")
+    public List<Film> findByDirectorIdWithSort(@PathVariable(value = "directorId") Long dirId,
+                                               @RequestParam(value = "sortBy", required = false) List<String> sortParams) {
+        return filmService.findByDirectorIdWithSort(dirId, sortParams);
+    }
 }
 

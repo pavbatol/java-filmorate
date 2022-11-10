@@ -22,9 +22,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GenreDBStorage implements GenreStorage {
 
-    final static String UPDATE_GENRE_SQL = "update genres g set name = ? where g.genre_id = ?";
-    final static String FIND_ALL_GENRES_SQL = "select * from genres";
-    final static String FIND_GENRE_BY_ID_SQL = "select * from genres g where g.genre_id = ?";
+    private final static String UPDATE_GENRE_SQL = "update genres g set name = ? where g.genre_id = ?";
+    private final static String FIND_ALL_GENRES_SQL = "select * from genres";
+    private final static String FIND_GENRE_BY_ID_SQL = "select * from genres g where g.genre_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 

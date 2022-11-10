@@ -44,6 +44,10 @@ public class Film extends AbstractEntity {
     Set<Genre> genres;
 
     @NonFinal
+    @Setter
+    Set<Director> directors;
+
+    @NonFinal
     @NonNull
     MpaRating mpa;
 

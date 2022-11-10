@@ -26,6 +26,6 @@ public class FromToNowValidator implements ConstraintValidator<FromToNow, LocalD
 
     @Override
     public boolean isValid(LocalDate ld, ConstraintValidatorContext constraintValidatorContext) {
-        return !from.isAfter(ld) && !LocalDate.now().isBefore(ld);
+        return !from.isAfter(ld); // && !LocalDate.now().isBefore(ld); - Тестировщики думают фидьм может быть в будущем!
     }
 }
