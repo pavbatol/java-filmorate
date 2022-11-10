@@ -53,7 +53,7 @@ public class InMemoryFilmStorage
      * Заглушка
      */
     @Override
-    public List<Film> findByDirectorId(Long directorId, @NonNull List<SortByType> sorts) {
+    public List<Film> findByDirectorIdWithSort(Long directorId, @NonNull List<SortByType> sorts) {
         return null;
     }
 

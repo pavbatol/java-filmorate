@@ -105,7 +105,7 @@ class FilmControllerTest {
 
         mvc.perform(post("/films")
                         .content(objectMapper.writeValueAsString(film)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
     }
 
     @Test

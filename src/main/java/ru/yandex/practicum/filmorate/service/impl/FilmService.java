@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.enums.SortByType;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.impl.db.DirectorDbStorage;
 
 import javax.validation.constraints.Positive;
 import java.util.*;
@@ -25,14 +26,16 @@ public class FilmService extends AbstractService<Film> {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final DirectorDbStorage directorStorage;
     private final static String GENERIC_TYPE_NAME = "Фильм";
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage storage,
-                       @Qualifier("userDbStorage") UserStorage userStorage) {
+                       @Qualifier("userDbStorage") UserStorage userStorage, DirectorDbStorage directorStorage) {
         super(storage);
         this.filmStorage = storage;
         this.userStorage = userStorage;
+        this.directorStorage = directorStorage;
     }
 
     @Override
@@ -70,7 +73,8 @@ public class FilmService extends AbstractService<Film> {
         return filmStorage.findPopularFilms(count);
     }
 
-    public List<Film> findByDirectorId(Long dirId, List<String> sortParams) {
+    public List<Film> findByDirectorIdWithSort(Long dirId, List<String> sortParams) {
+        validateId(directorStorage, dirId);
         List<SortByType> sortTypes = Optional.ofNullable(sortParams)
                 .map(strings -> strings.stream()
                         .map(SortByType::valueOfParam)
@@ -78,7 +82,7 @@ public class FilmService extends AbstractService<Film> {
                         .map(Optional::get)
                         .collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
-        return filmStorage.findByDirectorId(dirId, sortTypes);
+        return filmStorage.findByDirectorIdWithSort(dirId, sortTypes);
     }
 
     @NonNull
@@ -89,5 +93,4 @@ public class FilmService extends AbstractService<Film> {
             return film.getLikes();
         });
     }
-
 }
