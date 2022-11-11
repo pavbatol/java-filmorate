@@ -46,27 +46,27 @@ public class ReviewService extends AbstractService<Review> {
         validateId(reviewStorage, reviewId);
         validateId(userStorage, userId);
         reviewStorage.likeReview(reviewId, userId);
-        log.debug("Добавлен лайк к отзыву #reviewId пользователем #userId");
+        log.debug("Добавлен лайк к отзыву #{} пользователем #{}", reviewId, userId);
     }
 
     public void dislikeReview(long reviewId, long userId) {
         validateId(reviewStorage, reviewId);
         validateId(userStorage, userId);
         reviewStorage.dislikeReview(reviewId, userId);
-        log.debug("Добавлен дизлайк к отзыву #reviewId пользователем #userId");
+        log.debug("Добавлен дизлайк к отзыву #{} пользователем #{}", reviewId, userId);
     }
 
     public void removeLike(long reviewId, long userId) {
         validateId(reviewStorage, reviewId);
         validateId(userStorage, userId);
         reviewStorage.removeLike(reviewId, userId);
-        log.debug("Удален лайк к отзыву #reviewId пользователем #userId");
+        log.debug("Удален лайк к отзыву #{} пользователем #{}", reviewId, userId);
     }
 
     public void removeDislike(long reviewId, long userId) {
         validateId(reviewStorage, reviewId);
         validateId(userStorage, userId);
         reviewStorage.removeDislike(reviewId, userId);
-        log.debug("Удален дизлайк к отзыву #reviewId пользователем #userId");
+        log.debug("Удален дизлайк к отзыву #{} пользователем #{}", reviewId, userId);
     }
 }

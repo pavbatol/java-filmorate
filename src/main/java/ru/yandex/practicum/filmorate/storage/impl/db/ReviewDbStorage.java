@@ -56,30 +56,30 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Review update(@NonNull Review review) {
         validateId(this, review, null);
-        final String UPDATE_SQL = "update reviews r set r.content = ?, r.is_positive = ? where r.review_id = ?";
-        jdbcTemplate.update(UPDATE_SQL, review.getContent(), review.getIsPositive(), review.getId());
+        final String Sql = "update reviews r set r.content = ?, r.is_positive = ? where r.review_id = ?";
+        jdbcTemplate.update(Sql, review.getContent(), review.getIsPositive(), review.getId());
         return getNonNullObject(this, review.getId());
     }
 
     @Override
     public Review remove(Long id) {
         Review review = getNonNullObject(this, id);
-        final String REMOVE_SQL = "delete from reviews r where r.review_id = ?";
-        jdbcTemplate.update(REMOVE_SQL, id);
+        final String Sql = "delete from reviews r where r.review_id = ?";
+        jdbcTemplate.update(Sql, id);
         return review;
     }
 
     @Override
     public List<Review> findAll() {
-        final String FIND_ALL_SQL = "select * from reviews r order by r.useful desc";
-        return jdbcTemplate.query(FIND_ALL_SQL, this::mapRowToGenre);
+        final String Sql = "select * from reviews r order by r.useful desc";
+        return jdbcTemplate.query(Sql, this::mapRowToGenre);
     }
 
     @Override
     public Optional<Review> findById(Long id) {
         try {
-            final String FIND_BY_ID_SQL = "select * from reviews r where r.review_id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID_SQL, this::mapRowToGenre, id));
+            final String Sql = "select * from reviews r where r.review_id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(Sql, this::mapRowToGenre, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -87,9 +87,13 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> findByFilmId(long filmId, @Positive int count) {
-        final String sWhere = filmId == -1 ? " where r.film_id like ? " : " where r.film_id = ? ";
-        final String FIND_BY_FILM_ID_SQL = String.format("select * from reviews r %s order by r.useful desc limit ?", sWhere);
-        return jdbcTemplate.query(FIND_BY_FILM_ID_SQL, this::mapRowToGenre, filmId == -1 ? "%" : filmId, count);
+        final String sWhere = filmId == -1
+                ? " where r.film_id like ? "
+                : " where r.film_id = ? ";
+        final String Sql = String.format("select * from reviews r %s order by r.useful desc limit ?", sWhere);
+        return jdbcTemplate.query(Sql, this::mapRowToGenre,
+                filmId == -1 ? "%" : filmId,
+                count);
     }
 
     @Override
@@ -128,7 +132,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     private void markReview(long reviewId, long userId, boolean liked) {
-        final String INSERT_SQL = "insert into review_marks (review_id, user_id, mark) " +
+        final String Sql = "insert into review_marks (review_id, user_id, mark) " +
                 "    (select ?1, ?2, ?3 where not exists( " +
                 "             select 1 " +
                 "             from review_marks r" +
@@ -136,18 +140,18 @@ public class ReviewDbStorage implements ReviewStorage {
                 "               and r.user_id = ?2 " +
                 "         ))";
 
-        if (jdbcTemplate.update(INSERT_SQL, reviewId, userId, liked) == 1) {
+        if (jdbcTemplate.update(Sql, reviewId, userId, liked) == 1) {
             updateUseful(reviewId, liked ? 1 : -1);
         }
     }
 
     private boolean removeMark(long reviewId, long userId) {
-        final String REMOVE_MARK_SQL = "delete from review_marks  where review_id = ? and  user_id = ?";
-        return jdbcTemplate.update(REMOVE_MARK_SQL, reviewId, userId) == 1;
+        final String Sql = "delete from review_marks  where review_id = ? and  user_id = ?";
+        return jdbcTemplate.update(Sql, reviewId, userId) == 1;
     }
 
     private void updateUseful(long reviewId, int addedValue) {
-        final String UPDATE_USEFUL_SQL = "update reviews set useful = useful + ?1 where review_id = ?2";
-        jdbcTemplate.update(UPDATE_USEFUL_SQL, addedValue, reviewId);
+        final String Sql = "update reviews set useful = useful + ?1 where review_id = ?2";
+        jdbcTemplate.update(Sql, addedValue, reviewId);
     }
 }
