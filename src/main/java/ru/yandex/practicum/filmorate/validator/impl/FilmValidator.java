@@ -19,9 +19,7 @@ public class FilmValidator extends AbstractValidator<Film> {
         if (film.getDescription() != null && film.getDescription().length() > 200) {
             throw new ValidateDescriptionException("Максимальная длина описания 200 символов");
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, DECEMBER, 28))
-                // || film.getReleaseDate().isAfter(LocalDate.now()) - Тестировщики думают фидьм может быть в будущем!
-            ) {
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, DECEMBER, 28))) {
             throw new ValidateDateException("Дата релиза — не раньше 28 декабря 1895 года и не в будущем");
         }
         if (film.getDuration() <= 0) {

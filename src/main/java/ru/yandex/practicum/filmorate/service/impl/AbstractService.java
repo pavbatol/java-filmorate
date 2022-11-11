@@ -29,7 +29,7 @@ public abstract class AbstractService<T extends Entity> implements Service<T> {
     }
 
     @Override
-    public T update(T t) {
+    public T update(@NonNull T t) {
         T updated = storage.update(t);
         log.debug("Обновлен {}: {}", entityTypeName, updated);
         return updated;
