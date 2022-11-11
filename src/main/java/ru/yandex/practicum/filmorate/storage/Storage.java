@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.NonNull;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 
 import java.util.List;
@@ -9,9 +10,9 @@ import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getN
 
 public interface Storage<T> {
 
-    T add(T t);
+    T add(@NonNull T t);
 
-    T update(T t);
+    T update(@NonNull T t);
 
     default T remove(Long id) {
         throw new UnsupportedOperationException("Удаление не поддерживается");

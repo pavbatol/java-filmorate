@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl.db;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateId;
 
 @Slf4j
 @Repository
@@ -32,7 +34,7 @@ public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Director add(Director director) {
+    public Director add(@NonNull Director director) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("directors")
                 .usingGeneratedKeyColumns("director_id");
@@ -43,12 +45,8 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Director update(Director director) {
-        if (!contains(director.getId())) {
-            String message = String.format("Такого id для %s нет: %s", director.getClass().getSimpleName(), director.getId());
-            log.error(message);
-            throw new NotFoundException(message);
-        }
+    public Director update(@NonNull Director director) {
+        validateId(this, director, null);
         jdbcTemplate.update(UPDATE_SQL, director.getName(), director.getId());
         return director;
     }
@@ -56,7 +54,7 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public Director remove(Long id) {
         Director director = getNonNullObject(this, id);
-        jdbcTemplate.update(REMOVE_SQL, director.getId());
+        jdbcTemplate.update(REMOVE_SQL, id);
         return director;
     }
 

@@ -25,7 +25,7 @@ public class ReviewController extends AbstractController<Review, ReviewService> 
 
     /**
      * Заказчик захотел энд-поинт, кокторый прописан в интерфейсе для findAll(),
-     * использовать для метода с другой сигнатурой - findReviewsByFilmId(filmId, count).
+     * использовать для метода с другой сигнатурой - findByFilmId(filmId, count).
      * Поэтому переопределяем энд-поинт в @GetMapping и делаем 'заглушку'
      */
     @Override
@@ -36,10 +36,10 @@ public class ReviewController extends AbstractController<Review, ReviewService> 
     }
 
     @GetMapping()
-    @Operation(summary = "findReviewsByFilmId")
-    public List<Review> findReviewsByFilmId(@RequestParam(value = "filmId", defaultValue = "0") long filmId,
-                                            @RequestParam(value = "count", defaultValue = "10") int count) {
-        return reviewService.findReviewsByFilmId(filmId, count);
+    @Operation(summary = "findByFilmId")
+    public List<Review> findByFilmId(@RequestParam(value = "filmId", defaultValue = "-1") long filmId,
+                                     @RequestParam(value = "count", defaultValue = "10") int count) {
+        return reviewService.findByFilmId(filmId, count);
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -57,16 +57,16 @@ public class ReviewController extends AbstractController<Review, ReviewService> 
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    @Operation(summary = "deleteLike")
-    public void deleteLike(@PathVariable(value = "id") long reviewId,
+    @Operation(summary = "removeLike")
+    public void removeLike(@PathVariable(value = "id") long reviewId,
                            @PathVariable(value = "userId") long userId) {
-        reviewService.deleteLike(reviewId, userId);
+        reviewService.removeLike(reviewId, userId);
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
-    @Operation(summary = "deleteDislike")
-    public void deleteDislike(@PathVariable(value = "id") long reviewId,
+    @Operation(summary = "removeDislike")
+    public void removeDislike(@PathVariable(value = "id") long reviewId,
                               @PathVariable(value = "userId") long userId) {
-        reviewService.deleteDislike(reviewId, userId);
+        reviewService.removeDislike(reviewId, userId);
     }
 }
