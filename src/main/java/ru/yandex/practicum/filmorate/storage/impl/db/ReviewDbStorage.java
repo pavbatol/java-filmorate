@@ -71,14 +71,14 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> findAll() {
-        String FIND_ALL_SQL = "select * from reviews r order by r.useful desc";
+        final String FIND_ALL_SQL = "select * from reviews r order by r.useful desc";
         return jdbcTemplate.query(FIND_ALL_SQL, this::mapRowToGenre);
     }
 
     @Override
     public Optional<Review> findById(Long id) {
         try {
-            String FIND_BY_ID_SQL = "select * from reviews r where r.review_id = ?";
+            final String FIND_BY_ID_SQL = "select * from reviews r where r.review_id = ?";
             return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID_SQL, this::mapRowToGenre, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -87,29 +87,33 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> findByFilmId(long filmId, @Positive int count) {
-        String sWhere = filmId == -1 ? " where r.film_id like ? " : " where r.film_id = ? ";
-        String FIND_BY_FILM_ID_SQL = String.format("select * from reviews r %s order by r.useful desc limit ?", sWhere);
+        final String sWhere = filmId == -1 ? " where r.film_id like ? " : " where r.film_id = ? ";
+        final String FIND_BY_FILM_ID_SQL = String.format("select * from reviews r %s order by r.useful desc limit ?", sWhere);
         return jdbcTemplate.query(FIND_BY_FILM_ID_SQL, this::mapRowToGenre, filmId == -1 ? "%" : filmId, count);
     }
 
     @Override
     public void likeReview(long reviewId, long userId) {
-
+        markReview(reviewId, userId, true);
     }
 
     @Override
     public void dislikeReview(long reviewId, long userId) {
-
+        markReview(reviewId, userId, false);
     }
 
     @Override
     public void removeLike(long reviewId, long userId) {
-
+        if (removeMark(reviewId, userId)) {
+            updateUseful(reviewId, -1);
+        }
     }
 
     @Override
     public void removeDislike(long reviewId, long userId) {
-
+        if (removeMark(reviewId, userId)) {
+            updateUseful(reviewId, 1);
+        }
     }
 
     private Review mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {
@@ -121,5 +125,29 @@ public class ReviewDbStorage implements ReviewStorage {
                 .userId(rs.getLong("user_id"))
                 .filmId(rs.getLong("film_id"))
                 .build();
+    }
+
+    private void markReview(long reviewId, long userId, boolean liked) {
+        final String INSERT_SQL = "insert into review_marks (review_id, user_id, mark) " +
+                "    (select ?1, ?2, ?3 where not exists( " +
+                "             select 1 " +
+                "             from review_marks r" +
+                "             where r.review_id = ?1 " +
+                "               and r.user_id = ?2 " +
+                "         ))";
+
+        if (jdbcTemplate.update(INSERT_SQL, reviewId, userId, liked) == 1) {
+            updateUseful(reviewId, liked ? 1 : -1);
+        }
+    }
+
+    private boolean removeMark(long reviewId, long userId) {
+        final String REMOVE_MARK_SQL = "delete from review_marks  where review_id = ? and  user_id = ?";
+        return jdbcTemplate.update(REMOVE_MARK_SQL, reviewId, userId) == 1;
+    }
+
+    private void updateUseful(long reviewId, int addedValue) {
+        final String UPDATE_USEFUL_SQL = "update reviews set useful = useful + ?1 where review_id = ?2";
+        jdbcTemplate.update(UPDATE_USEFUL_SQL, addedValue, reviewId);
     }
 }
