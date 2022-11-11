@@ -4,10 +4,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Entity;
-import ru.yandex.practicum.filmorate.model.impl.Film;
-import ru.yandex.practicum.filmorate.model.impl.Genre;
-import ru.yandex.practicum.filmorate.model.impl.MpaRating;
-import ru.yandex.practicum.filmorate.model.impl.User;
+import ru.yandex.practicum.filmorate.model.impl.*;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
 import javax.annotation.Nullable;
@@ -28,6 +25,8 @@ public final class ValidatorManager {
             //---
         } else if (clazz == Genre.class) {
             //---
+        } else if (clazz == Review.class) {
+            new ReviewValidator().runValidation((Review) t);
         }
     }
 

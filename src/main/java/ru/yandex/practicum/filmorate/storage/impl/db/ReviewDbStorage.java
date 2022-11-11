@@ -2,16 +2,16 @@ package ru.yandex.practicum.filmorate.storage.impl.db;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.annotation.Validated;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.impl.Director;
 import ru.yandex.practicum.filmorate.model.impl.Review;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.constraints.Positive;
 import java.sql.ResultSet;
@@ -29,9 +29,12 @@ import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.vali
 @RequiredArgsConstructor
 public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final UserDbStorage userStorage;
-    private final FilmDbStorage filmStorage;
 
+    @Qualifier("userDbStorage")
+    private final UserStorage userStorage;
+
+    @Qualifier("filmDbStorage")
+    private final FilmStorage filmStorage;
 
     @Override
     public Review add(@NonNull Review review) {
@@ -68,7 +71,7 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> findAll() {
-        String FIND_ALL_SQL = "select * from reviews";
+        String FIND_ALL_SQL = "select * from reviews r order by r.useful desc";
         return jdbcTemplate.query(FIND_ALL_SQL, this::mapRowToGenre);
     }
 
@@ -85,7 +88,7 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public List<Review> findByFilmId(long filmId, @Positive int count) {
         String sWhere = filmId == -1 ? " where r.film_id like ? " : " where r.film_id = ? ";
-        String FIND_BY_FILM_ID_SQL = String.format("select * from reviews r %s limit ?", sWhere);
+        String FIND_BY_FILM_ID_SQL = String.format("select * from reviews r %s order by r.useful desc limit ?", sWhere);
         return jdbcTemplate.query(FIND_BY_FILM_ID_SQL, this::mapRowToGenre, filmId == -1 ? "%" : filmId, count);
     }
 

@@ -13,8 +13,8 @@ public class ReviewController extends AbstractController<Review, ReviewService> 
 
     private final ReviewService reviewService;
 
-    public ReviewController(ReviewService service, ReviewService reviewService) {
-        super(service);
+    public ReviewController(ReviewService reviewService) {
+        super(reviewService);
         this.reviewService = reviewService;
     }
 
