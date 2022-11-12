@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller.impl;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.model.impl.User;
 import ru.yandex.practicum.filmorate.service.impl.UserService;
 
@@ -45,5 +46,11 @@ public class UserController extends AbstractController<User, UserService> {
     public List<User> findMutualFriends(@PathVariable(value = "id") Long userId,
                                         @PathVariable(value = "otherId") Long otherId) {
         return userService.findMutualFriends(userId, otherId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    @Operation(summary = "findRecommendedFilms")
+    public List<Film> findRecommendedFilms(@PathVariable(value = "id") Long userId) {
+        return userService.findRecommendedFilms(userId);
     }
 }

@@ -184,7 +184,7 @@ public class FilmDbStorage implements FilmStorage {
                 .map(sortByType -> new pass().sortTypeToFieldName(sortByType))
                 .collect(Collectors.joining(","));
 
-        String FIND_FILMS_BY_DIRECTOR_WITH_SORT =
+        String sql =
                 "select f.*, r.rating_id as ri, r.rating as rt, r.description as dc, count(fl.USER_ID) ct " +
                 "from films f " +
                 "join film_directors fd on f.film_id = fd.film_id " +
@@ -194,10 +194,50 @@ public class FilmDbStorage implements FilmStorage {
                 "group by f.FILM_ID, fl.FILM_ID " +
                 "order by " +  fieldsForSort;
 
-        return jdbcTemplate.query(FIND_FILMS_BY_DIRECTOR_WITH_SORT, this::mapRowToFilm, directorId);
+        return jdbcTemplate.query(sql, this::mapRowToFilm, directorId);
     }
 
-    private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
+    /*
+    Поэтапная проверка результата - Можно удалтьб
+select F.FILM_ID, F.NAME, FL.USER_ID, FL2.USER_ID, FL2.FILM_ID, F2.NAME
+from FILMS F
+         JOIN FILM_LIKES FL on F.FILM_ID = FL.FILM_ID
+         join FILM_LIKES FL2 on FL.USER_ID = 1 and FL2.USER_ID <> 1 and FL2.FILM_ID <> F.FILM_ID
+         join FILMS F2 on F2.FILM_ID = FL2.FILM_ID;
+
+select count(FL2.USER_ID) like_count,  FL2.USER_ID, FL2.FILM_ID, F2.NAME
+from FILMS F
+         JOIN FILM_LIKES FL on F.FILM_ID = FL.FILM_ID
+         join FILM_LIKES FL2 on FL.USER_ID = 1 and FL2.USER_ID <> 1 and FL2.FILM_ID <> F.FILM_ID
+         join FILMS F2 on F2.FILM_ID = FL2.FILM_ID
+group by FL2.USER_ID, FL2.FILM_ID
+
+select count(FL2.USER_ID) like_count, FL2.FILM_ID, F2.NAME
+from FILMS F
+         JOIN FILM_LIKES FL on F.FILM_ID = FL.FILM_ID
+         join FILM_LIKES FL2 on FL.USER_ID = 1 and FL2.USER_ID <> 1 and FL2.FILM_ID <> F.FILM_ID
+         join FILMS F2 on F2.FILM_ID = FL2.FILM_ID
+group by FL2.FILM_ID
+order by like_count DESC
+limit 2;
+     */
+
+    @Override
+    public List<Film> findRecommendedFilms(Long userId) {
+        final int usersLimit = 2;
+        final String sql =
+                "select count(fl2.user_id) like_count, fl2.film_id, f2.name " +
+                "from films f " +
+                "     join film_likes fl on f.film_id = fl.film_id " +
+                "     join film_likes fl2 on fl.user_id = ?1 and fl2.user_id <> ?1 and fl2.film_id <> f.film_id " +
+                "     join films f2 on f2.film_id = fl2.film_id " +
+                "group by fl2.film_id " +
+                "order by like_count desc " +
+                "limit ?2";
+        return jdbcTemplate.query(sql, this::mapRowToFilm, userId, usersLimit);
+    }
+
+    public Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
         long filmId = rs.getLong("film_id");
         return Film.builder()
                 .id(filmId)

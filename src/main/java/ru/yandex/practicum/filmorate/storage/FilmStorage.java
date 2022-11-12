@@ -15,4 +15,6 @@ public interface FilmStorage extends Storage<Film> {
     List<Film> findPopularFilms(@Positive int count);
 
     List<Film> findByDirectorIdWithSort(Long directorId, List<SortByType> sortParams);
+
+    List<Film> findRecommendedFilms(Long userId);
 }
