@@ -21,6 +21,11 @@ public class FilmController extends AbstractController<Film, FilmService> {
         this.filmService = filmService;
     }
 
+    @Override
+    public Film remove(Long id) {
+        return filmService.remove(id);
+    }
+
     @PutMapping("/{id}/like/{userId}")
     @Operation(summary = "addLike")
     public Film addLike(@PathVariable(value = "id") Long filmId,
