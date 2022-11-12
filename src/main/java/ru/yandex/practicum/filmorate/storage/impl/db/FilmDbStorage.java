@@ -216,6 +216,11 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, this::mapRowToFilm, userId, usersLimit);
     }
 
+    @Override
+    public List<Film> findBySearchWithSort(String query, List<String> sortParams) {
+        return null;
+    }
+
     public Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
         long filmId = rs.getLong("film_id");
         return Film.builder()
