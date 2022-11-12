@@ -199,26 +199,17 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findRecommendedFilms(Long userId) {
-        final int usersLimit = 2;
+        final int usersLimit = 1;
         final String sql =
-                "select f2.* " +
+                "select f2.*, r.rating_id as ri, r.rating as rt, r.description as dc " +
                 "from films f " +
                 "    join film_likes fl on f.film_id = fl.film_id " +
                 "    join film_likes fl2 on fl.user_id = ?1 and fl2.user_id <> ?1 and fl2.film_id <> f.film_id " +
                 "    join films f2 on f2.film_id = fl2.film_id " +
+                "    left join mpa_ratings r on f2.rating_id = r.rating_id " +
                 "group by f2.film_id " +
                 "order by count(fl2.user_id) desc " +
                 "limit ?2";
-
-//        final String sql_1 =
-//                "select f2.* " +
-//                "from films f " +
-//                "     join film_likes fl on f.film_id = fl.film_id " +
-//                "     join film_likes fl2 on fl.user_id = ?1 and fl2.user_id <> ?1 and fl2.film_id <> f.film_id " +
-//                "     join films f2 on f2.film_id = fl2.film_id " +
-//                "group by fl2.film_id " +
-//                "order by count(fl2.user_id) desc " +
-//                "limit ?2";
         return jdbcTemplate.query(sql, this::mapRowToFilm, userId, usersLimit);
     }
 
