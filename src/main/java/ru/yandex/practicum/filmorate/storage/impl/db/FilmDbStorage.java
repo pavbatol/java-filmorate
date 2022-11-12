@@ -203,12 +203,12 @@ public class FilmDbStorage implements FilmStorage {
         final String sql =
                 "select f2.*, r.rating_id as ri, r.rating as rt, r.description as dc " +
                 "from films f " +
-                "         join film_likes fl on f.film_id = fl.film_id and fl.user_id = ?1 " + // фильмы пользователя (f.film_id)
-                "         join film_likes fl2 on fl.film_id = fl2.film_id and fl2.user_id <> ?1 " + // пересеченные пользователи лайкнувшие те же фильмы (fl2.user_id)
-                "         join film_likes fl3 on fl2.user_id = fl3.user_id and fl3.user_id <> ?1 " + // все лайкнутые фильмы пересеченных пользователей (fl3.film_id)
-                "         left join film_likes fl4 on fl3.film_id = fl4.film_id and fl4.user_id = ?1 " + //пометим запись 'null' - фильмы которые не лайкнул пользователь
-                "         join films f2 on fl3.film_id = f2.film_id " + // добавим сами фильмы\n" +
-                "         left join mpa_ratings r on f2.rating_id = r.rating_id " + // добавим mpa-рейтинг
+                "         join film_likes fl on f.film_id = fl.film_id and fl.user_id = ?1 " +
+                "         join film_likes fl2 on fl.film_id = fl2.film_id and fl2.user_id <> ?1 " +
+                "         join film_likes fl3 on fl2.user_id = fl3.user_id and fl3.user_id <> ?1 " +
+                "         left join film_likes fl4 on fl3.film_id = fl4.film_id and fl4.user_id = ?1 " +
+                "         join films f2 on fl3.film_id = f2.film_id " +
+                "         left join mpa_ratings r on f2.rating_id = r.rating_id " +
                 "where fl4.user_id is null " +
                 "group by f2.film_id " +
                 "order by count(fl2.user_id) desc " +
