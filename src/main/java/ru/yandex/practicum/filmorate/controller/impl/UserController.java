@@ -21,6 +21,11 @@ public class UserController extends AbstractController<User, UserService> {
         this.userService = userService;
     }
 
+    @Override
+    public User remove(Long id) {
+        return userService.remove(id);
+    }
+
     @PutMapping("/{id}/friends/{friendId}")
     @Operation(summary = "addFriend")
     public User addFriend(@PathVariable(value = "id") Long userId,
