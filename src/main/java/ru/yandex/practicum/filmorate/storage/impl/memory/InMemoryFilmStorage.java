@@ -51,7 +51,12 @@ public class InMemoryFilmStorage
 
     @Override
     public List<Film> findByDirectorIdWithSort(Long directorId, @NonNull List<SortByType> sorts) {
-        throw new UnsupportedOperationException("Метод в секции 'ьуьщкн' не поддерживается");
+        throw new UnsupportedOperationException("Метод в секции 'memory' не поддерживается");
+    }
+
+    @Override
+    public List<Film> findRecommendedFilms(Long userId) {
+        throw new UnsupportedOperationException("Метод в секции 'memory' не поддерживается");
     }
 
     @NonNull

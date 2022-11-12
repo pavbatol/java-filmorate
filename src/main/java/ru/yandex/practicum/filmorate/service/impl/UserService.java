@@ -5,10 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.model.impl.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateId;
@@ -17,13 +22,16 @@ import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.vali
 @Service
 public class UserService extends AbstractService<User> {
 
-    private final UserStorage userStorage;
     private final static String GENERIC_TYPE_NAME = "Пользователь";
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage storage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage storage,
+                       @Qualifier("filmDbStorage") FilmStorage filmStorage) {
         super(storage);
         this.userStorage = storage;
+        this.filmStorage = filmStorage;
     }
 
     @Override
@@ -66,6 +74,13 @@ public class UserService extends AbstractService<User> {
         validateId(userStorage, userId);
         validateId(userStorage, otherId);
         return userStorage.findMutualFriends(userId, otherId);
+    }
+
+    public List<Film> findRecommendedFilms(Long userId) {
+        validateId(userStorage, userId);
+        List<Film> films = filmStorage.findRecommendedFilms(userId);
+        log.debug("Рекомендовано для пользователя #{} {} фильмов", userId, films.size());
+        return films;
     }
 
     @NonNull

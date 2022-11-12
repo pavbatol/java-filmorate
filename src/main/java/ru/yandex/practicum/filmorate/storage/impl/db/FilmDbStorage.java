@@ -184,7 +184,7 @@ public class FilmDbStorage implements FilmStorage {
                 .map(sortByType -> new pass().sortTypeToFieldName(sortByType))
                 .collect(Collectors.joining(","));
 
-        String FIND_FILMS_BY_DIRECTOR_WITH_SORT =
+        String sql =
                 "select f.*, r.rating_id as ri, r.rating as rt, r.description as dc, count(fl.USER_ID) ct " +
                 "from films f " +
                 "join film_directors fd on f.film_id = fd.film_id " +
@@ -194,10 +194,29 @@ public class FilmDbStorage implements FilmStorage {
                 "group by f.FILM_ID, fl.FILM_ID " +
                 "order by " +  fieldsForSort;
 
-        return jdbcTemplate.query(FIND_FILMS_BY_DIRECTOR_WITH_SORT, this::mapRowToFilm, directorId);
+        return jdbcTemplate.query(sql, this::mapRowToFilm, directorId);
     }
 
-    private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
+    @Override
+    public List<Film> findRecommendedFilms(Long userId) {
+        final int usersLimit = 3;
+        final String sql =
+                "select f2.*, r.rating_id as ri, r.rating as rt, r.description as dc " +
+                "from films f " +
+                "         join film_likes fl on f.film_id = fl.film_id and fl.user_id = ?1 " +
+                "         join film_likes fl2 on fl.film_id = fl2.film_id and fl2.user_id <> ?1 " +
+                "         join film_likes fl3 on fl2.user_id = fl3.user_id and fl3.user_id <> ?1 " +
+                "         left join film_likes fl4 on fl3.film_id = fl4.film_id and fl4.user_id = ?1 " +
+                "         join films f2 on fl3.film_id = f2.film_id " +
+                "         left join mpa_ratings r on f2.rating_id = r.rating_id " +
+                "where fl4.user_id is null " +
+                "group by f2.film_id " +
+                "order by count(fl2.user_id) desc " +
+                "limit ?2";
+        return jdbcTemplate.query(sql, this::mapRowToFilm, userId, usersLimit);
+    }
+
+    public Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
         long filmId = rs.getLong("film_id");
         return Film.builder()
                 .id(filmId)
