@@ -197,31 +197,6 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, this::mapRowToFilm, directorId);
     }
 
-    /*
-    Поэтапная проверка результата - Можно удалтьб
-select F.FILM_ID, F.NAME, FL.USER_ID, FL2.USER_ID, FL2.FILM_ID, F2.NAME
-from FILMS F
-         JOIN FILM_LIKES FL on F.FILM_ID = FL.FILM_ID
-         join FILM_LIKES FL2 on FL.USER_ID = 1 and FL2.USER_ID <> 1 and FL2.FILM_ID <> F.FILM_ID
-         join FILMS F2 on F2.FILM_ID = FL2.FILM_ID;
-
-select count(FL2.USER_ID) like_count,  FL2.USER_ID, FL2.FILM_ID, F2.NAME
-from FILMS F
-         JOIN FILM_LIKES FL on F.FILM_ID = FL.FILM_ID
-         join FILM_LIKES FL2 on FL.USER_ID = 1 and FL2.USER_ID <> 1 and FL2.FILM_ID <> F.FILM_ID
-         join FILMS F2 on F2.FILM_ID = FL2.FILM_ID
-group by FL2.USER_ID, FL2.FILM_ID
-
-select count(FL2.USER_ID) like_count, FL2.FILM_ID, F2.NAME
-from FILMS F
-         JOIN FILM_LIKES FL on F.FILM_ID = FL.FILM_ID
-         join FILM_LIKES FL2 on FL.USER_ID = 1 and FL2.USER_ID <> 1 and FL2.FILM_ID <> F.FILM_ID
-         join FILMS F2 on F2.FILM_ID = FL2.FILM_ID
-group by FL2.FILM_ID
-order by like_count DESC
-limit 2;
-     */
-
     @Override
     public List<Film> findRecommendedFilms(Long userId) {
         final int usersLimit = 2;
