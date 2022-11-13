@@ -253,13 +253,13 @@ class FilmorateApplicationTests {
 
         assertThat(allFilms).hasSize(3);
 
-        List<Film> popularFilms = filmStorage.findPopularFilms(1);
+        List<Film> popularFilms = filmStorage.findPopularFilms(1, -1L, -1);
 
         assertThat(popularFilms).hasSize(1);
         assertThat(popularFilms.get(0)).hasFieldOrPropertyWithValue("id", added3.getId());
 
         filmStorage.removeLike(added2.getId(), uAdded1.getId());
-        popularFilms = filmStorage.findPopularFilms(1);
+        popularFilms = filmStorage.findPopularFilms(1, -1L, -1);
         assertThat(popularFilms).hasSize(1);
         assertThat(popularFilms.get(0)).hasFieldOrPropertyWithValue("id", added3.getId());
     }

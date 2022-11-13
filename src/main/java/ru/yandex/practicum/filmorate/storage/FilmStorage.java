@@ -12,7 +12,7 @@ public interface FilmStorage extends Storage<Film> {
 
     boolean removeLike(Long filmId, Long userId);
 
-    List<Film> findPopularFilms(@Positive int count);
+    List<Film> findPopularFilms(@Positive int count, Long genreId, int year);
 
     List<Film> findByDirectorIdWithSort(Long directorId, List<SortByType> sortParams);
 

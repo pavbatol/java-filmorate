@@ -39,7 +39,7 @@ public class InMemoryFilmStorage
     }
 
     @Override
-    public List<Film> findPopularFilms(int count) {
+    public List<Film> findPopularFilms(int count, Long genreId, int year) {
         List<Film> result = this.findAll().stream()
                 .sorted(this::filmCompare)
                 .limit(count)
