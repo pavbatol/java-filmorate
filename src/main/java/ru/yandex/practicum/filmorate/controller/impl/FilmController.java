@@ -61,5 +61,13 @@ public class FilmController extends AbstractController<Film, FilmService> {
                                    @RequestParam(value = "by", required = false) List<String> searchParams) {
         return filmService.findBySearch(query, searchParams);
     }
+
+    @GetMapping("/common")
+    @Operation(summary = "findCommon")
+    public List<Film> findCommon(@RequestParam(value = "userId") Long userId,
+                                 @RequestParam(value = "friendId") Long friendId) {
+        return filmService.findCommon(userId, friendId);
+    }
+
 }
 

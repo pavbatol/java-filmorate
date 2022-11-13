@@ -97,4 +97,10 @@ public class FilmService extends AbstractService<Film> {
     public List<Film> findBySearch(String query, List<String> searchParams) {
         return filmStorage.findBySearch(query, Objects.isNull(searchParams) ? List.of() : searchParams);
     }
+
+    public List<Film> findCommon(Long userId, Long friendId) {
+        validateId(userStorage, userId);
+        validateId(filmStorage, friendId);
+        return filmStorage.findCommon(userId, friendId);
+    }
 }

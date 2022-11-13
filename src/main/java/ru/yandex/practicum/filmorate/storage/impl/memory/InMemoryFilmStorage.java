@@ -64,6 +64,11 @@ public class InMemoryFilmStorage
         throw new UnsupportedOperationException("Метод в секции 'memory' не поддерживается");
     }
 
+    @Override
+    public List<Film> findCommon(Long userId, Long friendId) {
+        throw new UnsupportedOperationException("Метод в секции 'memory' не поддерживается");
+    }
+
     @NonNull
     private Set<Long> getLikesKeeper(@NonNull Film film) {
         return Optional.ofNullable(film.getLikes()).orElseGet(() -> {
