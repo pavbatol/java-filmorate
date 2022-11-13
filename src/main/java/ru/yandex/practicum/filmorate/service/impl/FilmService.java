@@ -94,7 +94,7 @@ public class FilmService extends AbstractService<Film> {
         });
     }
 
-    public List<Film> findBySearchWithSort(String query, List<String> sortParams) {
-        return filmStorage.findBySearchWithSort(query, sortParams);
+    public List<Film> findBySearch(String query, List<String> searchParams) {
+        return filmStorage.findBySearch(query, Objects.isNull(searchParams) ? List.of() : searchParams);
     }
 }

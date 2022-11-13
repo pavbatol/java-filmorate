@@ -60,7 +60,7 @@ public class InMemoryFilmStorage
     }
 
     @Override
-    public List<Film> findBySearchWithSort(String query, List<String> sortParams) {
+    public List<Film> findBySearch(String query, List<String> searchParams) {
         throw new UnsupportedOperationException("Метод в секции 'memory' не поддерживается");
     }
 
