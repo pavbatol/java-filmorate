@@ -179,12 +179,12 @@ public class FilmDbStorage implements FilmStorage {
             }
         }
 
-        String fieldsForSort = sortTypes.stream()
+        final String fieldsForSort = sortTypes.stream()
                 .distinct()
                 .map(sortByType -> new pass().sortTypeToFieldName(sortByType))
                 .collect(Collectors.joining(","));
 
-        String sql =
+        final String sql =
                 "select f.*, r.rating_id ri, r.rating rt, r.description dc, count(fl.USER_ID) ct " +
                 "from films f " +
                 "   join film_directors fd on f.film_id = fd.film_id " +
@@ -232,7 +232,7 @@ public class FilmDbStorage implements FilmStorage {
                 .collect(Collectors.joining(" or "));
         where = where.length() > 0 ? "where " + where : where;
 
-        String sql =
+        final String sql =
                 "select f.*, r.rating_id ri, r.rating rt, r.description dc " +
                 "from films f " +
                 "   left join film_directors fd on f.film_id = fd.film_id " +
