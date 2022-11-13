@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.service.impl.FilmService;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -52,6 +53,13 @@ public class FilmController extends AbstractController<Film, FilmService> {
     public List<Film> findByDirectorIdWithSort(@PathVariable(value = "directorId") Long dirId,
                                                @RequestParam(value = "sortBy", required = false) List<String> sortParams) {
         return filmService.findByDirectorIdWithSort(dirId, sortParams);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "findBySearch")
+    public List<Film> findBySearch(@RequestParam(value = "query") @NotBlank String query,
+                                   @RequestParam(value = "by", required = false) List<String> searchParams) {
+        return filmService.findBySearch(query, searchParams);
     }
 }
 

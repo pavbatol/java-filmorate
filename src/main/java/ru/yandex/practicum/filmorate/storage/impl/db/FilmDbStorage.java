@@ -179,17 +179,17 @@ public class FilmDbStorage implements FilmStorage {
             }
         }
 
-        String fieldsForSort = sortTypes.stream()
+        final String fieldsForSort = sortTypes.stream()
                 .distinct()
                 .map(sortByType -> new pass().sortTypeToFieldName(sortByType))
                 .collect(Collectors.joining(","));
 
-        String sql =
-                "select f.*, r.rating_id as ri, r.rating as rt, r.description as dc, count(fl.USER_ID) ct " +
+        final String sql =
+                "select f.*, r.rating_id ri, r.rating rt, r.description dc, count(fl.USER_ID) ct " +
                 "from films f " +
-                "join film_directors fd on f.film_id = fd.film_id " +
-                "left join mpa_ratings r on f.rating_id = r.rating_id " +
-                "left join film_likes fl on f.film_id = fl.film_id " +
+                "   join film_directors fd on f.film_id = fd.film_id " +
+                "   left join mpa_ratings r on f.rating_id = r.rating_id " +
+                "   left join film_likes fl on f.film_id = fl.film_id " +
                 "where fd.director_id = ? " +
                 "group by f.FILM_ID, fl.FILM_ID " +
                 "order by " +  fieldsForSort;
@@ -201,19 +201,48 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> findRecommendedFilms(Long userId) {
         final int usersLimit = 3;
         final String sql =
-                "select f2.*, r.rating_id as ri, r.rating as rt, r.description as dc " +
+                "select f2.*, r.rating_id  ri, r.rating  rt, r.description  dc " +
                 "from films f " +
-                "         join film_likes fl on f.film_id = fl.film_id and fl.user_id = ?1 " +
-                "         join film_likes fl2 on fl.film_id = fl2.film_id and fl2.user_id <> ?1 " +
-                "         join film_likes fl3 on fl2.user_id = fl3.user_id and fl3.user_id <> ?1 " +
-                "         left join film_likes fl4 on fl3.film_id = fl4.film_id and fl4.user_id = ?1 " +
-                "         join films f2 on fl3.film_id = f2.film_id " +
-                "         left join mpa_ratings r on f2.rating_id = r.rating_id " +
+                "   join film_likes fl on f.film_id = fl.film_id and fl.user_id = ?1 " +
+                "   join film_likes fl2 on fl.film_id = fl2.film_id and fl2.user_id <> ?1 " +
+                "   join film_likes fl3 on fl2.user_id = fl3.user_id and fl3.user_id <> ?1 " +
+                "   left join film_likes fl4 on fl3.film_id = fl4.film_id and fl4.user_id = ?1 " +
+                "   join films f2 on fl3.film_id = f2.film_id " +
+                "   left join mpa_ratings r on f2.rating_id = r.rating_id " +
                 "where fl4.user_id is null " +
                 "group by f2.film_id " +
                 "order by count(fl2.user_id) desc " +
                 "limit ?2";
         return jdbcTemplate.query(sql, this::mapRowToFilm, userId, usersLimit);
+    }
+
+    @Override
+    public List<Film> findBySearch(String query, @NonNull List<String> searchParams) {
+        final String title = "title";
+        final String director = "director";
+        final String fName = " f.name ilike ?1 ";
+        final String dName = " d.name ilike ?1  ";
+        searchParams = searchParams.isEmpty() ? List.of(title, director) : searchParams;
+
+        String where = searchParams.stream()
+                .filter(s -> s.equals(title) || s.equals(director))
+                .distinct()
+                .limit(2)
+                .map(s -> s.equals(title) ? fName : dName)
+                .collect(Collectors.joining(" or "));
+        where = where.length() > 0 ? "where " + where : where;
+
+        final String sql =
+                "select f.*, r.rating_id ri, r.rating rt, r.description dc " +
+                "from films f " +
+                "   left join film_directors fd on f.film_id = fd.film_id " +
+                "   left join directors d on d.director_id = fd.director_id " +
+                "   left join mpa_ratings r on f.rating_id = r.rating_id " +
+                "" + where +
+                "group by f.film_id " +
+                "order by f.rate desc";
+
+        return jdbcTemplate.query(sql, this::mapRowToFilm, "%" + query + "%");
     }
 
     public Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {

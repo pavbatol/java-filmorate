@@ -93,4 +93,8 @@ public class FilmService extends AbstractService<Film> {
             return film.getLikes();
         });
     }
+
+    public List<Film> findBySearch(String query, List<String> searchParams) {
+        return filmStorage.findBySearch(query, Objects.isNull(searchParams) ? List.of() : searchParams);
+    }
 }
