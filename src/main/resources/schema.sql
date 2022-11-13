@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS events (
     operation ENUM ('REMOVE', 'ADD', 'UPDATE') NOT NULL,
     user_id INTEGER NOT NULL,
     entity_id INTEGER NOT NULL,
-    CONSTRAINT fk_events_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    CONSTRAINT fk_events_user_id FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
 
 ALTER TABLE films ADD CONSTRAINT IF NOT EXISTS fk_films_to_rating

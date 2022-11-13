@@ -29,38 +29,38 @@ public class EventService extends AbstractService<Event> {
     }
 
     public List<Event> findByUserId(int userId) {
-        return null;
+        return eventStorage.findByUserId(userId);
     }
 
-    public Event addAddedLikeEvent(int userId, int entityId) {
+    public Event addAddedLikeEvent(long userId, long entityId) {
         return eventStorage.add(makeEvent(userId, entityId, LIKE, ADD));
     }
 
-    public Event addRemovedLikeEvent(int userId, int entityId) {
+    public Event addRemovedLikeEvent(long userId, long entityId) {
         return eventStorage.add(makeEvent(userId, entityId, LIKE, REMOVE));
     }
 
-    public Event addAddedReviewEvent(int userId, int entityId) {
+    public Event addAddedReviewEvent(long userId, long entityId) {
         return eventStorage.add(makeEvent(userId, entityId, REVIEW, ADD));
     }
 
-    public Event addRemovedReviewEvent(int userId, int entityId) {
+    public Event addRemovedReviewEvent(long userId, long entityId) {
         return eventStorage.add(makeEvent(userId, entityId, REVIEW, REMOVE));
     }
 
-    public Event addUpdatedReviewEvent(int userId, int entityId) {
+    public Event addUpdatedReviewEvent(long userId, long entityId) {
         return eventStorage.add(makeEvent(userId, entityId, REVIEW, UPDATE));
     }
 
-    public Event addAddedFriendEvent(int userId, int entityId) {
+    public Event addAddedFriendEvent(long userId, long entityId) {
         return eventStorage.add(makeEvent(userId, entityId, FRIEND, ADD));
     }
 
-    public Event addRemovedFriendEvent(int userId, int entityId) {
+    public Event addRemovedFriendEvent(long userId, long entityId) {
         return eventStorage.add(makeEvent(userId, entityId, FRIEND, REMOVE));
     }
 
-    private Event makeEvent(int userId, int entityId, EventType eT, OperationType oT) {
+    private Event makeEvent(long userId, long entityId, EventType eT, OperationType oT) {
         return Event.builder()
                 .id(0)
                 .timestamp(Instant.now().toEpochMilli())

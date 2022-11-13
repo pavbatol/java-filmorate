@@ -24,7 +24,7 @@ public class Event implements Entity {
 
     private OperationType operation;
 
-    private int userId;
+    private long userId;
 
-    private int entityId;
+    private long entityId;
 }
