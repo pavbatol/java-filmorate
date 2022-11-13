@@ -44,8 +44,10 @@ public class FilmController extends AbstractController<Film, FilmService> {
     @GetMapping("/popular")
     @Operation(summary = "findPopularFilms")
     public List<Film> findPopularFilms(
-            @RequestParam(defaultValue = "10", required = false) @Positive int count) {
-        return filmService.findPopularFilms(count);
+            @RequestParam(value = "count", defaultValue = "10", required = false) @Positive int count,
+            @RequestParam(value = "genreId", required = false, defaultValue = "-1") Long genreId,
+            @RequestParam(value = "year", required = false, defaultValue = "-1") int year) {
+        return filmService.findPopularFilms(count, genreId, year);
     }
 
     @GetMapping("/director/{directorId}")
@@ -68,6 +70,5 @@ public class FilmController extends AbstractController<Film, FilmService> {
                                  @RequestParam(value = "friendId") Long friendId) {
         return filmService.findCommon(userId, friendId);
     }
-
 }
 

@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
 
@@ -42,9 +43,6 @@ public class FilmDbStorage implements FilmStorage {
             + "from films f "
             + "left join mpa_ratings r on f.rating_id = r.rating_id "
             + "where film_id = ?";
-
-    private final static String FIND_POPULAR_FILMS_SQL = FIND_ALL_FILM_SQL + " "
-            + "order by rate desc limit ?";
 
     private final static String DELETE_LIKES_BY_FILM_ID_SQL = "delete from film_likes f where f.film_id = ?";
 
@@ -162,8 +160,26 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> findPopularFilms(int count) {
-        return jdbcTemplate.query(FIND_POPULAR_FILMS_SQL, this::mapRowToFilm, count);
+    public List<Film> findPopularFilms(int count, @NonNull Long genreId, int year) {
+        final String whereGenre = genreId == -1 ? null : " fg.genre_id = ?1 ";
+        final String whereYear = year == -1 ? null : " extract(year from  f.release_date) = ?2 ";
+
+        String where = Stream.of(whereGenre, whereYear)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" and "));
+        where = where.length() > 0 ? "where " + where : where;
+
+        final String sql =
+                "select f.*, r.rating_id ri, r.rating rt, r.description dc " +
+                        "from films f " +
+                        "    left join mpa_ratings r on f.rating_id = r.rating_id " +
+                        "    left join film_genres fg on f.film_id = fg.film_id " +
+                        "" + where +
+                        "group by f.film_id " +
+                        "order by f.rate desc " +
+                        "limit ?3";
+
+        return jdbcTemplate.query(sql, this::mapRowToFilm, genreId, year, count);
     }
 
     @Override

@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.enums.SortByType;
 import ru.yandex.practicum.filmorate.model.impl.Film;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.storage.impl.db.DirectorDbStorage;
 
@@ -26,16 +28,18 @@ public class FilmService extends AbstractService<Film> {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    private final DirectorDbStorage directorStorage;
+    private final DirectorStorage directorStorage;
+    private final GenreStorage genreStorage;
     private final static String GENERIC_TYPE_NAME = "Фильм";
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage storage,
-                       @Qualifier("userDbStorage") UserStorage userStorage, DirectorDbStorage directorStorage) {
+                       @Qualifier("userDbStorage") UserStorage userStorage, DirectorDbStorage directorStorage, GenreStorage genreStorage) {
         super(storage);
         this.filmStorage = storage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
+        this.genreStorage = genreStorage;
     }
 
     @Override
@@ -69,8 +73,11 @@ public class FilmService extends AbstractService<Film> {
         return getNonNullObject(filmStorage, filmId);
     }
 
-    public List<Film> findPopularFilms(@Positive int count) {
-        return filmStorage.findPopularFilms(count);
+    public List<Film> findPopularFilms(@Positive int count, Long genreId, int year) {
+        if (genreId != -1) {
+            validateId(genreStorage, genreId, true);
+        }
+        return filmStorage.findPopularFilms(count, genreId, year);
     }
 
     public List<Film> findByDirectorIdWithSort(Long dirId, List<String> sortParams) {
