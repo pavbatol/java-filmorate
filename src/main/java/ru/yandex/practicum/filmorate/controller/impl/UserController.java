@@ -63,7 +63,7 @@ public class UserController extends AbstractController<User, UserService> {
         return userService.findRecommendedFilms(userId);
     }
 
-    @GetMapping("/users/{id}/feed")
+    @GetMapping("/{id}/feed")
     public List<Event> findEvents(@PathVariable(value = "id") int userId) {
         return eventService.findByUserId(userId);
     }
