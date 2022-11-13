@@ -19,4 +19,6 @@ public interface FilmStorage extends Storage<Film> {
     List<Film> findRecommendedFilms(Long userId);
 
     List<Film> findBySearch(String query, List<String> searchParams);
+
+    List<Film> findCommon(Long userId, Long friendId);
 }

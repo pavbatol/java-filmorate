@@ -245,6 +245,18 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, this::mapRowToFilm, "%" + query + "%");
     }
 
+    @Override
+    public List<Film> findCommon(Long userId, Long friendId) {
+        final String sql =
+            "select f.*, r.rating_id ri, r.rating rt, r.description dc " +
+            "from films f " +
+            "    join film_likes fl on f.film_id = fl.film_id and fl.user_id = ?1 " +
+            "    join film_likes fl2 on fl.film_id = fl2.film_id and fl2.user_id = ?2 " +
+            "    left join mpa_ratings r on f.rating_id = r.rating_id " +
+            "order by f.rate desc";
+        return jdbcTemplate.query(sql, this::mapRowToFilm, userId, friendId);
+    }
+
     public Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
         long filmId = rs.getLong("film_id");
         return Film.builder()
