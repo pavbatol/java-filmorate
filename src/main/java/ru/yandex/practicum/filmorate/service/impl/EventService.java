@@ -18,9 +18,9 @@ public class EventService extends AbstractService<Event> {
     private final static String GENERIC_TYPE_NAME = "Событие";
     private final EventStorage eventStorage;
 
-    public EventService(EventStorage eventStorage, EventStorage eventStorage1) {
+    public EventService(EventStorage eventStorage) {
         super(eventStorage);
-        this.eventStorage = eventStorage1;
+        this.eventStorage = eventStorage;
     }
 
     @Override

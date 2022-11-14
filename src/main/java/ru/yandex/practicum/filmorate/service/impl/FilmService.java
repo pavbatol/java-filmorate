@@ -35,7 +35,10 @@ public class FilmService extends AbstractService<Film> {
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage storage,
-                       @Qualifier("userDbStorage") UserStorage userStorage, DirectorDbStorage directorStorage, GenreStorage genreStorage, EventService eventService) {
+                       @Qualifier("userDbStorage") UserStorage userStorage,
+                       DirectorDbStorage directorStorage,
+                       GenreStorage genreStorage,
+                       EventService eventService) {
         super(storage);
         this.filmStorage = storage;
         this.userStorage = userStorage;
@@ -53,7 +56,7 @@ public class FilmService extends AbstractService<Film> {
         validateId(userStorage, userId);
         Film film = getNonNullObject(filmStorage, filmId);
         if (getLikesKeeper(film).contains(userId)) {
-            log.debug(String.format("%s #%s уже имеет лайк от пользователя #%s", entityTypeName, filmId, userId));
+            log.debug("{} #{} уже имеет лайк от пользователя #{}", entityTypeName, filmId, userId);
             return film;
         }
         if (filmStorage.addLike(filmId, userId)) {
@@ -72,7 +75,7 @@ public class FilmService extends AbstractService<Film> {
         validateId(userStorage, userId);
         Film film = getNonNullObject(filmStorage, filmId);
         if (!getLikesKeeper(film).contains(userId)) {
-            log.debug(String.format("%s #%s не имел лайк от пользователя #%s", entityTypeName, filmId, userId));
+            log.debug("{} #{} не имел лайк от пользователя #{}", entityTypeName, filmId, userId);
             return film;
         }
         if (filmStorage.removeLike(filmId, userId)) {
