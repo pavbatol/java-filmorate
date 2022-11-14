@@ -65,9 +65,6 @@ public class FilmService extends AbstractService<Film> {
         } else {
             log.debug("{} #{} Не удалось добавить лайк от пользователя #{}", entityTypeName, filmId, userId);
         }
-//        log.debug(filmStorage.addLike(filmId, userId)
-//                ? String.format("%s #%s получил лайк от пользователя #%s", entityTypeName, filmId, userId)
-//                : String.format("%s #%s Не удалось добавить лайк от пользователя #%s", entityTypeName, filmId, userId));
         return getNonNullObject(filmStorage, filmId);
     }
 
@@ -84,9 +81,6 @@ public class FilmService extends AbstractService<Film> {
         } else {
             log.debug("{} #{} Не удалось удалить лайк от пользователя #{}", entityTypeName, filmId, userId);
         }
-//        log.debug(filmStorage.removeLike(filmId, userId)
-//                ? String.format("%s #%s потерял лайк от пользователя #%s", entityTypeName, filmId, userId)
-//                : String.format("%s #%s Не удалось удалить лайк от пользователя #%s", entityTypeName, filmId, userId));
         return getNonNullObject(filmStorage, filmId);
     }
 

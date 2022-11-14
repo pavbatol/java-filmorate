@@ -55,9 +55,6 @@ public class UserService extends AbstractService<User> {
         } else {
             log.debug("Не удалось добавить {} #{} в друзья к #{}", entityTypeName, friendId, userId);
         }
-//        log.debug(userStorage.addFriend(userId, friendId)
-//                ? String.format("%s #%s добавлен в друзья к #%s", entityTypeName, friendId, userId)
-//                : String.format("Не удалось добавить %s #%s в друзья к #%s", entityTypeName, friendId, userId));
         return getNonNullObject(userStorage, userId);
     }
 
@@ -74,9 +71,6 @@ public class UserService extends AbstractService<User> {
         } else {
             log.debug("Не удалось удалить {} #{} из друзей #{}", entityTypeName, friendId, userId);
         }
-//        log.debug(userStorage.removeFriend(userId, friendId)
-//                ? String.format("%s #%s удален из друзей у #%s", entityTypeName, friendId, userId)
-//                : String.format("Не удалось удалить %s #%s из друзей #%s", entityTypeName, friendId, userId));
         return getNonNullObject(userStorage, userId);
     }
 

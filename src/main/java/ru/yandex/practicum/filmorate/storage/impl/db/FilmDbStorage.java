@@ -46,7 +46,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private final static String DELETE_LIKES_BY_FILM_ID_SQL = "delete from film_likes f where f.film_id = ?";
 
-    private final static String DELETE_LIKE_BY_FILM_ID_AND_USER_ID_SQL = "delete from film_likes f where f.film_id = ? and f.user_id - ?";
+    private final static String DELETE_LIKE_BY_FILM_ID_AND_USER_ID_SQL = "delete from film_likes f where f.film_id = ? and f.user_id = ?";
 
     private final static String INSERT_LIKE_BY_FILM_ID_AND_USER_ID_SQL = "insert into film_likes (film_id, user_id) values(?, ?)";
 
