@@ -3,8 +3,10 @@ package ru.yandex.practicum.filmorate.controller.impl;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.impl.Event;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.model.impl.User;
+import ru.yandex.practicum.filmorate.service.impl.EventService;
 import ru.yandex.practicum.filmorate.service.impl.UserService;
 
 import java.util.List;
@@ -15,10 +17,12 @@ import java.util.List;
 public class UserController extends AbstractController<User, UserService> {
 
     private final UserService userService;
+    private final EventService eventService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EventService eventService) {
         super(userService);
         this.userService = userService;
+        this.eventService = eventService;
     }
 
     @Override
@@ -57,5 +61,10 @@ public class UserController extends AbstractController<User, UserService> {
     @Operation(summary = "findRecommendedFilms")
     public List<Film> findRecommendedFilms(@PathVariable(value = "id") Long userId) {
         return userService.findRecommendedFilms(userId);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<Event> findEvents(@PathVariable(value = "id") int userId) {
+        return eventService.findByUserId(userId);
     }
 }

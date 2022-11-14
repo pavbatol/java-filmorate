@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -20,19 +21,43 @@ public class ReviewService extends AbstractService<Review> {
     private final ReviewStorage reviewStorage;
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final EventService eventService;
 
     public ReviewService(ReviewStorage reviewStorage,
                          @Qualifier("filmDbStorage") FilmStorage filmStorage,
-                         @Qualifier("userDbStorage") UserStorage userStorage) {
+                         @Qualifier("userDbStorage") UserStorage userStorage,
+                         EventService eventService) {
         super(reviewStorage);
         this.reviewStorage = reviewStorage;
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.eventService = eventService;
     }
 
     @Override
     protected String getGenericTypeName() {
         return GENERIC_TYPE_NAME;
+    }
+
+    @Override
+    public Review add(@NonNull Review review) {
+        Review added = super.add(review);
+        eventService.addAddedReviewEvent(added.getUserId(), added.getId());
+        return added;
+    }
+
+    @Override
+    public Review update(@NonNull Review review) {
+        Review updated = super.update(review);
+        eventService.addUpdatedReviewEvent(updated.getUserId(), updated.getId());
+        return updated;
+    }
+
+    @Override
+    public Review remove(Long id) {
+        Review removed = super.remove(id);
+        eventService.addRemovedReviewEvent(removed.getUserId(), removed.getId());
+        return removed;
     }
 
     public List<Review> findByFilmId(long filmId, int count) {
