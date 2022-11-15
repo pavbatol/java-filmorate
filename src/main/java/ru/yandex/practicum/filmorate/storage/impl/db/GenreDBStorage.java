@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.impl.db;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.impl.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateId;
 
 @Slf4j
 @Component
@@ -29,7 +31,7 @@ public class GenreDBStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Genre add(Genre genre) {
+    public Genre add(@NonNull Genre genre) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("genres")
                 .usingGeneratedKeyColumns("genre_id");
@@ -40,12 +42,8 @@ public class GenreDBStorage implements GenreStorage {
     }
 
     @Override
-    public Genre update(Genre genre) {
-        if (!contains(genre.getId())) {
-            String message = String.format("Такого id для %s нет: %s", genre.getClass().getSimpleName(), genre.getId());
-            log.error(message);
-            throw new NotFoundException(message);
-        }
+    public Genre update(@NonNull Genre genre) {
+        validateId(this, genre, null);
         jdbcTemplate.update(UPDATE_GENRE_SQL,
                 genre.getName(),
                 genre.getId());

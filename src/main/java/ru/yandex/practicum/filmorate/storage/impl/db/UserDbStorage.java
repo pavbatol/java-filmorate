@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.impl.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -18,6 +17,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateId;
 
 @Slf4j
 @Component("userDbStorage")
@@ -72,7 +72,7 @@ public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public User add(User user) {
+    public User add(@NonNull User user) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("user_id");
@@ -86,12 +86,8 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User update(User user) {
-        if (!contains(user.getId())) {
-            String message = String.format("Такого id для %s нет: %s", user.getClass().getSimpleName(), user.getId());
-            log.error(message);
-            throw new NotFoundException(message);
-        }
+    public User update(@NonNull User user) {
+        validateId(this, user, null);
         jdbcTemplate.update(UPDATE_USER_SQL,
                 user.getEmail(),
                 user.getLogin(),
