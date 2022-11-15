@@ -244,29 +244,29 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> findBySearch(String query, @NonNull List<String> searchParams) {
         final String title = "title";
         final String director = "director";
-        final String fName = " f.name ilike ?1 ";
-        final String dName = " d.name ilike ?1  ";
-        searchParams = searchParams.isEmpty() ? List.of(title, director) : searchParams;
-
-        String where = searchParams.stream()
+        final String fName = " lower(f.name) like ?1 ";
+        final String dName = " lower(d.name) like ?1 ";
+        final String directorsJoin = " left join directors d on d.director_id = fd.director_id ";
+        final String where = (searchParams.isEmpty() ? List.of(title, director) : searchParams).stream()
                 .filter(s -> s.equals(title) || s.equals(director))
                 .distinct()
                 .limit(2)
                 .map(s -> s.equals(title) ? fName : dName)
-                .collect(Collectors.joining(" or "));
-        where = where.length() > 0 ? "where " + where : where;
+                .collect(Collectors.joining(" or ")).lines()
+                        .filter(s -> !s.isBlank())
+                        .map(s -> s.contains(dName) ? directorsJoin + " where " + s : " where " + s
+                        ).collect(Collectors.joining(" "));
 
         final String sql =
                 "select f.*, r.rating_id ri, r.rating rt, r.description dc " +
                 "from films f " +
                 "   left join film_directors fd on f.film_id = fd.film_id " +
-                "   left join directors d on d.director_id = fd.director_id " +
                 "   left join mpa_ratings r on f.rating_id = r.rating_id " +
                 "" + where +
                 "group by f.film_id " +
                 "order by f.rate desc";
 
-        return jdbcTemplate.query(sql, this::mapRowToFilm, "%" + query + "%");
+        return jdbcTemplate.query(sql, this::mapRowToFilm, "%" + query.toLowerCase() + "%");
     }
 
     @Override
