@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.impl.Review;
@@ -83,6 +84,13 @@ public class ReviewDbStorage implements ReviewStorage {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean contains(Long id) {
+        final  String sql = "select 1 from reviews r where r.review_id = ?";
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql, id);
+        return sqlRowSet.first();
     }
 
     @Override

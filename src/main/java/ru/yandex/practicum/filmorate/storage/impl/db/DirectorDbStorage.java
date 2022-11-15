@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.impl.Director;
@@ -70,6 +71,13 @@ public class DirectorDbStorage implements DirectorStorage {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean contains(Long id) {
+        final  String sql = "select 1 from directors d where d.director_id = ?";
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql, id);
+        return sqlRowSet.first();
     }
 
     private Director mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {

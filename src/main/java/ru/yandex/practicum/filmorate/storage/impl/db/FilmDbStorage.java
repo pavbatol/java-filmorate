@@ -7,6 +7,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.enums.SortByType;
@@ -137,6 +138,13 @@ public class FilmDbStorage implements FilmStorage {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean contains(Long id) {
+        final  String sql = "select 1 from films f where f.film_id = ?";
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql, id);
+        return sqlRowSet.first();
     }
 
     @Override
