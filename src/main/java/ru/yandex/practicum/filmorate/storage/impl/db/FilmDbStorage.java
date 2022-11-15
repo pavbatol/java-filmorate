@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.enums.SortByType;
 import ru.yandex.practicum.filmorate.model.impl.Director;
 import ru.yandex.practicum.filmorate.model.impl.Film;
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.getNonNullObject;
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateId;
 
 @Slf4j
 @Component("filmDbStorage")
@@ -79,7 +79,7 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Film add(Film film) {
+    public Film add(@NonNull Film film) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
                 .usingGeneratedKeyColumns("film_id");
@@ -97,12 +97,8 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film update(Film film) {
-        if (!contains(film.getId())) {
-            String message = String.format("Такого id для %s нет: %s", film.getClass().getSimpleName(), film.getId());
-            log.error(message);
-            throw new NotFoundException(message);
-        }
+    public Film update(@NonNull Film film) {
+        validateId(this, film, null);
         jdbcTemplate.update(UPDATE_FILM_SQL,
                 film.getName(),
                 film.getDescription(),
@@ -250,7 +246,6 @@ public class FilmDbStorage implements FilmStorage {
         final String where = (searchParams.isEmpty() ? List.of(title, director) : searchParams).stream()
                 .filter(s -> s.equals(title) || s.equals(director))
                 .distinct()
-                .limit(2)
                 .map(s -> s.equals(title) ? fName : dName)
                 .collect(Collectors.joining(" or ")).lines()
                         .filter(s -> !s.isBlank())

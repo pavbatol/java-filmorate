@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.impl.db;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.impl.MpaRating;
 import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
 
@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static ru.yandex.practicum.filmorate.validator.impl.ValidatorManager.validateId;
 
 @Slf4j
 @Component
@@ -29,7 +31,7 @@ public class MpaRatingDBStorage implements MpaRatingStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public MpaRating add(MpaRating mpaRating) {
+    public MpaRating add(@NonNull MpaRating mpaRating) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("mpa_ratings")
                 .usingGeneratedKeyColumns("rating_id");
@@ -41,12 +43,8 @@ public class MpaRatingDBStorage implements MpaRatingStorage {
     }
 
     @Override
-    public MpaRating update(MpaRating mpaRating) {
-        if (!contains(mpaRating.getId())) {
-            String message = String.format("Такого id для %s нет: %s", mpaRating.getClass().getSimpleName(), mpaRating.getId());
-            log.error(message);
-            throw new NotFoundException(message);
-        }
+    public MpaRating update(@NonNull MpaRating mpaRating) {
+        validateId(this, mpaRating, null);
         jdbcTemplate.update(UPDATE_MPARATING_SQL,
                 mpaRating.getName(),
                 mpaRating.getDescription(),
