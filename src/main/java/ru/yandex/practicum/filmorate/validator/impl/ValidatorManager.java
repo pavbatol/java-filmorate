@@ -21,10 +21,6 @@ public final class ValidatorManager {
             new FilmValidator().runValidation((Film) t);
         } else if (clazz == User.class) {
             new UserValidator().runValidation((User) t);
-        } else if (clazz == MpaRating.class) {
-            //---
-        } else if (clazz == Genre.class) {
-            //---
         } else if (clazz == Review.class) {
             new ReviewValidator().runValidation((Review) t);
         }

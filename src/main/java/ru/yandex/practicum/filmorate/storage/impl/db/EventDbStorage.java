@@ -51,12 +51,12 @@ public class EventDbStorage implements EventStorage {
 
     @Override
     public List<Event> findAll() {
-        throw new UnsupportedOperationException("Функционал не запрошен заказчиком");
+        throw new UnsupportedOperationException("Сервис не использует этот метод для Event");
     }
 
     @Override
     public Optional<Event> findById(Long id) {
-        throw new UnsupportedOperationException("Функционал не запрошен заказчиком");
+        throw new UnsupportedOperationException("Сервис не использует этот метод для Event");
     }
 
     private Event mapRowToEvent(ResultSet rs, int rowNum) throws SQLException {

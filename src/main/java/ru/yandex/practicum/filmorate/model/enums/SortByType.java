@@ -15,12 +15,6 @@ public enum SortByType {
         this.param = param;
     }
 
-    public static List<String> getParams() {
-        return Arrays.stream(SortByType.values())
-                .map(sortByType -> sortByType.param)
-                .collect(Collectors.toList());
-    }
-
     public static Optional<SortByType> valueOfParam(String param) {
         return Arrays.stream(SortByType.values())
                 .filter(sortByType -> sortByType.param.equals(param))

@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.model.impl;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.experimental.SuperBuilder;
-import ru.yandex.practicum.filmorate.validator.annotationed.FromToNow;
+import ru.yandex.practicum.filmorate.validator.annotationed.From;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
@@ -29,7 +29,7 @@ public class Film extends AbstractEntity {
     String description;
 
     @NonNull
-    @FromToNow(year = 1895, month = DECEMBER, dayOfMonth = 28)
+    @From(year = 1895, month = DECEMBER, dayOfMonth = 28)
     LocalDate releaseDate;
 
     @Positive

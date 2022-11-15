@@ -34,13 +34,13 @@ public class FilmService extends AbstractService<Film> {
     private final EventService eventService;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage,
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        @Qualifier("userDbStorage") UserStorage userStorage,
-                       DirectorDbStorage directorStorage,
+                       DirectorStorage directorStorage,
                        GenreStorage genreStorage,
                        EventService eventService) {
-        super(storage);
-        this.filmStorage = storage;
+        super(filmStorage);
+        this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
         this.genreStorage = genreStorage;

@@ -20,7 +20,7 @@ public class FilmValidator extends AbstractValidator<Film> {
             throw new ValidateDescriptionException("Максимальная длина описания 200 символов");
         }
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, DECEMBER, 28))) {
-            throw new ValidateDateException("Дата релиза — не раньше 28 декабря 1895 года и не в будущем");
+            throw new ValidateDateException("Дата релиза — не раньше 28 декабря 1895");
         }
         if (film.getDuration() <= 0) {
             throw new ValidateDurationException("Продолжительность фильма должна быть положительной");

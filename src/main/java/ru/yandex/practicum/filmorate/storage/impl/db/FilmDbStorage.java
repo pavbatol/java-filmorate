@@ -171,13 +171,13 @@ public class FilmDbStorage implements FilmStorage {
 
         final String sql =
                 "select f.*, r.rating_id ri, r.rating rt, r.description dc " +
-                        "from films f " +
-                        "    left join mpa_ratings r on f.rating_id = r.rating_id " +
-                        "    left join film_genres fg on f.film_id = fg.film_id " +
-                        "" + where +
-                        "group by f.film_id " +
-                        "order by f.rate desc " +
-                        "limit ?3";
+                "from films f " +
+                "    left join mpa_ratings r on f.rating_id = r.rating_id " +
+                "    left join film_genres fg on f.film_id = fg.film_id " +
+                "" + where +
+                "group by f.film_id " +
+                "order by f.rate desc " +
+                "limit ?3";
 
         return jdbcTemplate.query(sql, this::mapRowToFilm, genreId, year, count);
     }
