@@ -8,9 +8,9 @@ import java.time.Month;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = FromToNowValidator.class)
+@Constraint(validatedBy = FromValidator.class)
 @Documented
-public @interface FromToNow {
+public @interface From {
     String message() default "Дата вне допустимого диапазона";
 
     Class<?>[] groups() default {};

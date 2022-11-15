@@ -22,9 +22,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MpaRatingDBStorage implements MpaRatingStorage {
 
-    final static String UPDATE_MPARATING_SQL = "update mpa_ratings m set rating = ?, description = ? where m.rating_id = ?";
-    final static String FIND_ALL_MPARATINGS_SQL = "select * from mpa_ratings";
-    final static String FIND_MPARATING_BY_ID_SQL = "select * from mpa_ratings m where m.rating_id = ?";
+    private final static String UPDATE_MPARATING_SQL = "update mpa_ratings m set rating = ?, description = ? where m.rating_id = ?";
+    private final static String FIND_ALL_MPARATINGS_SQL = "select * from mpa_ratings";
+    private final static String FIND_MPARATING_BY_ID_SQL = "select * from mpa_ratings m where m.rating_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 

@@ -8,11 +8,11 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 
 @Slf4j
-public class FromToNowValidator implements ConstraintValidator<FromToNow, LocalDate> {
+public class FromValidator implements ConstraintValidator<From, LocalDate> {
     private LocalDate from;
 
     @Override
-    public void initialize(FromToNow params) {
+    public void initialize(From params) {
         try {
             this.from = LocalDate.of(params.year(), params.month(), params.dayOfMonth());
         } catch (DateTimeException e) {
@@ -26,6 +26,6 @@ public class FromToNowValidator implements ConstraintValidator<FromToNow, LocalD
 
     @Override
     public boolean isValid(LocalDate ld, ConstraintValidatorContext constraintValidatorContext) {
-        return !from.isAfter(ld) && !LocalDate.now().isBefore(ld);
+        return !from.isAfter(ld);
     }
 }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl.memory;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.enums.SortByType;
 import ru.yandex.practicum.filmorate.model.impl.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
@@ -38,7 +39,7 @@ public class InMemoryFilmStorage
     }
 
     @Override
-    public List<Film> findPopularFilms(int count) {
+    public List<Film> findPopularFilms(int count, Long genreId, int year) {
         List<Film> result = this.findAll().stream()
                 .sorted(this::filmCompare)
                 .limit(count)
@@ -46,6 +47,26 @@ public class InMemoryFilmStorage
         log.debug("Найдено {} для {} из запрошенных {} с наибольшим количеством лайков",
                 result.size(), entityTypeName, count);
         return result;
+    }
+
+    @Override
+    public List<Film> findByDirectorIdWithSort(Long directorId, @NonNull List<SortByType> sorts) {
+        throw new UnsupportedOperationException("Метод в секции 'memory' не поддерживается");
+    }
+
+    @Override
+    public List<Film> findRecommendedFilms(Long userId) {
+        throw new UnsupportedOperationException("Метод в секции 'memory' не поддерживается");
+    }
+
+    @Override
+    public List<Film> findBySearch(String query, List<String> searchParams) {
+        throw new UnsupportedOperationException("Метод в секции 'memory' не поддерживается");
+    }
+
+    @Override
+    public List<Film> findCommon(Long userId, Long friendId) {
+        throw new UnsupportedOperationException("Метод в секции 'memory' не поддерживается");
     }
 
     @NonNull
