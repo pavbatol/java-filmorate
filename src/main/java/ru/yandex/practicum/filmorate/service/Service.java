@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.NonNull;
-
 import java.util.List;
 
 public interface Service<T> {
