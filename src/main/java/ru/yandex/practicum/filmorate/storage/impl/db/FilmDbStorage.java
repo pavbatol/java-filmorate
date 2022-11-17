@@ -240,8 +240,8 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> findBySearch(String query, @NonNull List<String> searchParams) {
         final String title = "title";
         final String director = "director";
-        final String fName = " lower(f.name) like ?1 ";
-        final String dName = " lower(d.name) like ?1 ";
+        final String fName = " lower(f.name) like '%' || ?1 || '%' ";
+        final String dName = " lower(d.name) like '%' || ?1 || '%' ";
         final String directorsJoin = " left join directors d on d.director_id = fd.director_id ";
         final String where = (searchParams.isEmpty() ? List.of(title, director) : searchParams).stream()
                 .filter(s -> s.equals(title) || s.equals(director))
@@ -249,8 +249,8 @@ public class FilmDbStorage implements FilmStorage {
                 .map(s -> s.equals(title) ? fName : dName)
                 .collect(Collectors.joining(" or ")).lines()
                         .filter(s -> !s.isBlank())
-                        .map(s -> s.contains(dName) ? directorsJoin + " where " + s : " where " + s
-                        ).collect(Collectors.joining(" "));
+                        .map(s -> s.contains(dName) ? directorsJoin + " where " + s : " where " + s)
+                        .collect(Collectors.joining(" "));
 
         final String sql =
                 "select f.*, r.rating_id ri, r.rating rt, r.description dc " +
@@ -261,7 +261,7 @@ public class FilmDbStorage implements FilmStorage {
                 "group by f.film_id " +
                 "order by f.rate desc";
 
-        return jdbcTemplate.query(sql, this::mapRowToFilm, "%" + query.toLowerCase() + "%");
+        return jdbcTemplate.query(sql, this::mapRowToFilm, query.toLowerCase());
     }
 
     @Override
