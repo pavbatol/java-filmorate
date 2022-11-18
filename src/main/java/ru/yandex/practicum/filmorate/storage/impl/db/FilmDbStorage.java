@@ -237,7 +237,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> findBySearch(String query, @NonNull List<String> searchParams) {
+    public List<Film> findBySearch(@NonNull String query, @NonNull List<String> searchParams) {
         final String title = "title";
         final String director = "director";
         final String fName = " lower(f.name) like '%' || ?1 || '%' ";
