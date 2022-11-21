@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.exception.Handler;
+package ru.yandex.practicum.filmorate.exception.handler;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import ru.yandex.practicum.filmorate.exception.AlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateException;
+import ru.yandex.practicum.filmorate.exception.validation.ValidateException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;

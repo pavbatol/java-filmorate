@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.validator.impl;
 
-import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateException;
+import ru.yandex.practicum.filmorate.exception.validation.ValidateException;
 import ru.yandex.practicum.filmorate.model.impl.Review;
 
 import java.util.Objects;

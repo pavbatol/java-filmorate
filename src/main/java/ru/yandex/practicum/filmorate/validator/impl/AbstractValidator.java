@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.validator.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateException;
+import ru.yandex.practicum.filmorate.exception.validation.ValidateException;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 @Slf4j
