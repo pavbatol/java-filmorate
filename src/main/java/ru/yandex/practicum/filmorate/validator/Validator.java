@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.validator;
 
-import ru.yandex.practicum.filmorate.exception.EntityValidation.ValidateException;
+import ru.yandex.practicum.filmorate.exception.validation.ValidateException;
 
 public interface Validator<T> {
 
