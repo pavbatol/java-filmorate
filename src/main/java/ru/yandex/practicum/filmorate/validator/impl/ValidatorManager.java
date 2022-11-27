@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.validator.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -11,17 +13,15 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ValidatorManager {
-    private ValidatorManager() {
-    }
 
     public static <T extends Entity> void validateEntity(T t) {
-        Class<? extends Entity> clazz = t.getClass();
-        if (clazz == Film.class) {
+        if (t instanceof Film) {
             new FilmValidator().runValidation((Film) t);
-        } else if (clazz == User.class) {
+        } else if (t instanceof User) {
             new UserValidator().runValidation((User) t);
-        } else if (clazz == Review.class) {
+        } else if (t instanceof Review) {
             new ReviewValidator().runValidation((Review) t);
         }
     }
